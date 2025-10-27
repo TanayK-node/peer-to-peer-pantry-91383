@@ -1,8 +1,11 @@
 import { Home, MessageCircle, PlusCircle, User } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BottomNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
@@ -10,6 +13,14 @@ const BottomNav = () => {
     { icon: PlusCircle, label: "Sell", path: "/sell" },
     { icon: User, label: "Account", path: "/profile" },
   ];
+
+  const handleNavigation = (path: string) => {
+    if (path === "/profile" && !user) {
+      navigate("/auth");
+      return;
+    }
+    navigate(path);
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
@@ -19,16 +30,16 @@ const BottomNav = () => {
           const isActive = location.pathname === item.path;
           
           return (
-            <Link
+            <button
               key={item.path}
-              to={item.path}
+              onClick={() => handleNavigation(item.path)}
               className={`flex flex-col items-center justify-center gap-1 flex-1 transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <Icon className="h-6 w-6" />
               <span className="text-xs font-medium">{item.label}</span>
-            </Link>
+            </button>
           );
         })}
       </div>
