@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Share2, Star, Heart, LogOut } from "lucide-react";
+import { ArrowLeft, Share2, Star, Heart, LogOut, MoreVertical, Trash2, Edit, CheckCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,24 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useDeleteProduct } from "@/hooks/useDeleteProduct";
+import { useUpdateProduct } from "@/hooks/useUpdateProduct";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,6 +38,11 @@ const Profile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("listing");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+  const deleteProduct = useDeleteProduct();
+  const updateProduct = useUpdateProduct();
 
   // If userId is provided in URL, show that profile, otherwise show current user's profile
   const profileUserId = userId || user?.id;
@@ -43,6 +66,27 @@ const Profile = () => {
     } else {
       navigate("/auth");
     }
+  };
+
+  const handleDeleteClick = (productId: string) => {
+    setSelectedProductId(productId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedProductId) {
+      deleteProduct.mutate(selectedProductId);
+      setDeleteDialogOpen(false);
+      setSelectedProductId(null);
+    }
+  };
+
+  const handleMarkAsSold = (productId: string) => {
+    updateProduct.mutate({ productId, status: "sold" });
+  };
+
+  const handleEditProduct = (productId: string) => {
+    navigate(`/product/${productId}/edit`);
   };
 
   if (profileLoading) {
@@ -138,7 +182,39 @@ const Profile = () => {
             ) : (
               <div className="grid grid-cols-2 gap-4">
                 {userProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} showFeatured={false} />
+                  <div key={product.id} className="relative">
+                    <ProductCard product={product} showFeatured={false} />
+                    {isOwnProfile && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-2 left-2 h-8 w-8 bg-white/90 hover:bg-white"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuItem onClick={() => handleEditProduct(product.id)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Item
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleMarkAsSold(product.id)}>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Mark as Sold
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteClick(product.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove Item
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -167,6 +243,23 @@ const Profile = () => {
       </main>
 
       <BottomNav />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Product</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this product? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
