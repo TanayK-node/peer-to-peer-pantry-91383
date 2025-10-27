@@ -1,27 +1,94 @@
-import { useState } from "react";
-import { ArrowLeft, Share2, Upload } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BottomNav from "@/components/BottomNav";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCategories } from "@/hooks/useCategories";
+import { useCreateProduct } from "@/hooks/useCreateProduct";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const productSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters").max(100),
+  description: z.string().min(10, "Description must be at least 10 characters").max(1000),
+  price: z.number().min(0, "Price must be positive"),
+  condition: z.enum(["new", "like_new", "good", "fair", "poor"]),
+  category_id: z.string().uuid("Please select a category"),
+  location: z.string().min(2, "Location is required").max(100),
+});
 
 const Sell = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: "Data Structures in C - 2nd Edition",
-    category: "Book",
-    description: "Overall good book with clean pages.",
-    price: "450",
-    condition: "Used - Good",
-    meetupPreference: "Used - Good",
-  });
+  const { user, loading: authLoading } = useAuth();
+  const { data: categories = [] } = useCategories();
+  const createProduct = useCreateProduct();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    category_id: "",
+    description: "",
+    price: "",
+    condition: "good" as const,
+    location: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth?redirect=/sell");
+    }
+  }, [user, authLoading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    setErrors({});
+
+    try {
+      const validated = productSchema.parse({
+        ...formData,
+        price: parseFloat(formData.price),
+      });
+
+      await createProduct.mutateAsync({
+        title: validated.title,
+        description: validated.description,
+        price: validated.price,
+        condition: validated.condition,
+        category_id: validated.category_id,
+        location: validated.location,
+        image_urls: [],
+      });
+
+      navigate("/");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0].toString()] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      }
+    }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -31,10 +98,8 @@ const Sell = () => {
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-semibold">View Your Listing</h1>
-          <button className="p-2 hover:bg-muted rounded-full">
-            <Share2 className="h-5 w-5" />
-          </button>
+          <h1 className="text-lg font-semibold">Create Listing</h1>
+          <div className="w-10" />
         </div>
       </header>
 
@@ -63,65 +128,97 @@ const Sell = () => {
           </div>
 
           {/* Form Fields */}
-          <div className="px-4 space-y-4">
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Title</label>
+          <div className="px-4 space-y-6">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Title *</label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0"
+                placeholder="e.g., iPhone 14 Pro Max"
+                className="h-12"
+                required
               />
+              {errors.title && <p className="text-xs text-destructive">{errors.title}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Category</label>
-              <Input
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0"
-              />
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Category *</label>
+              <Select
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+              >
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.icon} {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.category_id && <p className="text-xs text-destructive">{errors.category_id}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Description</label>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Description *</label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-transparent border-0 border-b rounded-none px-0 resize-none focus-visible:ring-0"
-                rows={2}
+                placeholder="Describe your item in detail..."
+                className="resize-none"
+                rows={4}
+                required
               />
+              {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Price</label>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Price ($) *</label>
               <Input
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0"
+                placeholder="0.00"
+                className="h-12"
                 type="number"
+                step="0.01"
+                min="0"
+                required
               />
+              {errors.price && <p className="text-xs text-destructive">{errors.price}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Condition</label>
-              <Input
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Condition *</label>
+              <Select
                 value={formData.condition}
-                onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
-                className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0"
-              />
+                onValueChange={(value: any) => setFormData({ ...formData, condition: value })}
+              >
+                <SelectTrigger className="h-12">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="like_new">Like New</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.condition && <p className="text-xs text-destructive">{errors.condition}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">
-                Meetup Preference
-              </label>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium">Location *</label>
               <Input
-                value={formData.meetupPreference}
-                onChange={(e) =>
-                  setFormData({ ...formData, meetupPreference: e.target.value })
-                }
-                className="bg-transparent border-0 border-b rounded-none px-0 focus-visible:ring-0"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="e.g., Campus Building 4"
+                className="h-12"
+                required
               />
+              {errors.location && <p className="text-xs text-destructive">{errors.location}</p>}
             </div>
           </div>
 
@@ -130,12 +227,17 @@ const Sell = () => {
             <Button
               type="button"
               variant="outline"
-              className="flex-1 h-12 text-destructive border-destructive"
+              className="flex-1 h-12"
+              onClick={() => navigate(-1)}
             >
-              Remove
+              Cancel
             </Button>
-            <Button type="submit" className="flex-1 h-12">
-              Mark as Sold
+            <Button 
+              type="submit" 
+              className="flex-1 h-12"
+              disabled={createProduct.isPending}
+            >
+              {createProduct.isPending ? "Creating..." : "Create Listing"}
             </Button>
           </div>
         </form>
