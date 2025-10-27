@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { useProduct } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
+import { useCreateConversation } from "@/hooks/useCreateConversation";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
@@ -17,6 +18,7 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useProduct(id || "");
   const { data: isFavorite = false } = useIsFavorite(id || "", user?.id);
   const toggleFavorite = useToggleFavorite();
+  const createConversation = useCreateConversation();
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -51,6 +53,39 @@ const ProductDetail = () => {
       userId: user.id,
       isFavorite,
     });
+  };
+
+  const handleContact = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to contact the seller",
+      });
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+
+    if (user.id === product?.seller_id) {
+      toast({
+        title: "Cannot message yourself",
+        description: "You cannot start a conversation with yourself",
+      });
+      return;
+    }
+
+    try {
+      const conversationId = await createConversation.mutateAsync({
+        productId: id || "",
+        sellerId: product?.seller_id || "",
+      });
+      navigate(`/chat/${conversationId}`);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to start conversation",
+      });
+    }
   };
 
   if (isLoading) {
@@ -191,7 +226,13 @@ const ProductDetail = () => {
           </div>
 
           {/* Send Message Button */}
-          <Button className="w-full h-12 text-base">Send Message</Button>
+          <Button 
+            className="w-full h-12 text-base"
+            onClick={handleContact}
+            disabled={createConversation.isPending}
+          >
+            {createConversation.isPending ? "Starting conversation..." : "Send Message"}
+          </Button>
         </div>
       </main>
 

@@ -2,39 +2,15 @@ import { ArrowLeft, Search, MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { Badge } from "@/components/ui/badge";
-
-const chatData = [
-  {
-    id: 1,
-    name: "Robert Paul",
-    message: "Can we meet today at building 28?",
-    time: "Today 12:30 PM",
-    avatar: "/placeholder.svg",
-    category: "Books",
-    unread: true,
-  },
-  {
-    id: 2,
-    name: "Robert Paul",
-    message: "Can we meet today at building 28?",
-    time: "Today 12:30 PM",
-    avatar: "/placeholder.svg",
-    category: "Books",
-    unread: true,
-  },
-  {
-    id: 3,
-    name: "Robert Paul",
-    message: "Can we meet today at building 28?",
-    time: "Today 12:30 PM",
-    avatar: "/placeholder.svg",
-    category: "Books",
-    unread: true,
-  },
-];
+import { Avatar } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useConversations } from "@/hooks/useConversations";
+import { formatDistanceToNow } from "date-fns";
 
 const Chats = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: conversations, isLoading } = useConversations(user?.id);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -76,56 +52,63 @@ const Chats = () => {
 
       <main className="max-w-screen-xl mx-auto">
         {/* Chat List */}
-        <div className="divide-y divide-border">
-          {chatData.map((chat) => (
-            <div
-              key={chat.id}
-              className="px-4 py-4 hover:bg-muted/50 cursor-pointer transition-colors"
-            >
-              <div className="flex items-start gap-3">
-                <img
-                  src={chat.avatar}
-                  alt={chat.name}
-                  className="w-12 h-12 rounded-full bg-primary/10 flex-shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between mb-1">
-                    <h3 className="font-semibold text-sm">{chat.name}</h3>
-                    <span className="text-xs text-muted-foreground">{chat.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm">✓</span>
-                    <p className="text-sm text-muted-foreground truncate">{chat.message}</p>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    Category: {chat.category}
-                  </Badge>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  {chat.unread && (
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  )}
-                  <button className="p-1 hover:bg-muted rounded">
-                    <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <p className="text-muted-foreground">Loading conversations...</p>
+          </div>
+        ) : !conversations || conversations.length === 0 ? (
+          <div className="flex items-center justify-center py-8">
+            <p className="text-muted-foreground">No conversations yet</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {conversations.map((conversation) => {
+              const otherUser =
+                user?.id === conversation.buyer_id
+                  ? conversation.seller_profile
+                  : conversation.buyer_profile;
 
-        {/* Context Menu Options (shown on long press/right click) */}
-        <div className="hidden">
-          <button className="block w-full px-4 py-3 text-left hover:bg-muted">
-            Mark as Read
-          </button>
-          <button className="block w-full px-4 py-3 text-left hover:bg-muted">
-            Delete
-          </button>
-          <button className="block w-full px-4 py-3 text-left hover:bg-muted">
-            Mark Important
-          </button>
-        </div>
+              return (
+                <div
+                  key={conversation.id}
+                  onClick={() => navigate(`/chat/${conversation.id}`)}
+                  className="px-4 py-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar className="w-12 h-12 flex-shrink-0 bg-primary/10">
+                      {otherUser?.avatar_url ? (
+                        <img src={otherUser.avatar_url} alt={otherUser.full_name} />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-primary font-semibold">
+                          {otherUser?.full_name?.[0]?.toUpperCase() || "?"}
+                        </div>
+                      )}
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-1">
+                        <h3 className="font-semibold text-sm">
+                          {otherUser?.full_name || "Unknown User"}
+                        </h3>
+                        <span className="text-xs text-muted-foreground">
+                          {conversation.last_message_at
+                            ? formatDistanceToNow(new Date(conversation.last_message_at), {
+                                addSuffix: true,
+                              })
+                            : ""}
+                        </span>
+                      </div>
+                      {conversation.products && (
+                        <Badge variant="secondary" className="text-xs mb-1">
+                          {conversation.products.title}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </main>
 
       <BottomNav />

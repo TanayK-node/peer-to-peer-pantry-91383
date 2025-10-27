@@ -9,6 +9,7 @@ import Listings from "./pages/Listings";
 import ProductDetail from "./pages/ProductDetail";
 import Profile from "./pages/Profile";
 import Chats from "./pages/Chats";
+import ChatDetail from "./pages/ChatDetail";
 import Search from "./pages/Search";
 import Auth from "./pages/Auth";
 import Sell from "./pages/Sell";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/chats" element={<Chats />} />
+            <Route path="/chat/:conversationId" element={<ChatDetail />} />
             <Route path="/search" element={<Search />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/sell" element={<Sell />} />
