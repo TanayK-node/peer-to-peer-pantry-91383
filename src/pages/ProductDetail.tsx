@@ -120,7 +120,12 @@ const ProductDetail = () => {
                   <p className="text-xs text-muted-foreground">
                     Posted on: {formattedDate}
                   </p>
-                  <button className="text-xs text-primary font-medium">View Profile</button>
+                  <button 
+                    onClick={() => navigate(`/profile/${seller.id}`)}
+                    className="text-xs text-primary font-medium"
+                  >
+                    View Profile
+                  </button>
                 </div>
               </div>
               <div className="flex items-center gap-1">
