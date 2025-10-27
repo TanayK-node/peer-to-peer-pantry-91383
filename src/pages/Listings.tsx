@@ -5,14 +5,23 @@ import ProductCard from "@/components/ProductCard";
 import { Link, useSearchParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useSearchProducts, SearchFilters } from "@/hooks/useSearchProducts";
+import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 
 const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryId = searchParams.get("category");
   const { data: categories = [] } = useCategories();
+  
   const filters: SearchFilters = categoryId ? { categoryId } : {};
-  const { data: products = [], isLoading } = useSearchProducts("", filters);
+  const hasFilters = !!categoryId;
+  
+  // Use different hooks based on whether filters are active
+  const { data: allProducts = [], isLoading: isLoadingAll } = useProducts();
+  const { data: filteredProducts = [], isLoading: isLoadingFiltered } = useSearchProducts("", filters);
+  
+  const products = hasFilters ? filteredProducts : allProducts;
+  const isLoading = hasFilters ? isLoadingFiltered : isLoadingAll;
 
   const selectedCategory = categories.find((cat) => cat.id === categoryId);
 
