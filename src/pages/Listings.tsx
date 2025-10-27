@@ -4,14 +4,15 @@ import BottomNav from "@/components/BottomNav";
 import ProductCard from "@/components/ProductCard";
 import { Link, useSearchParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { useSearchProducts } from "@/hooks/useSearchProducts";
+import { useSearchProducts, SearchFilters } from "@/hooks/useSearchProducts";
 import { useCategories } from "@/hooks/useCategories";
 
 const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryId = searchParams.get("category");
   const { data: categories = [] } = useCategories();
-  const { data: products = [], isLoading } = useSearchProducts("", categoryId || undefined);
+  const filters: SearchFilters = categoryId ? { categoryId } : {};
+  const { data: products = [], isLoading } = useSearchProducts("", filters);
 
   const selectedCategory = categories.find((cat) => cat.id === categoryId);
 
