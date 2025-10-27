@@ -1,12 +1,13 @@
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CategoryCard from "@/components/CategoryCard";
-import { categories } from "@/data/mockData";
+import { useCategories } from "@/hooks/useCategories";
 
 const recentSearches = ["Original text book", "Jeans"];
 
 const Search = () => {
   const navigate = useNavigate();
+  const { data: categories = [], isLoading } = useCategories();
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,11 +61,15 @@ const Search = () => {
           <h2 className="text-base font-semibold text-primary mb-4">
             Search with Category
           </h2>
-          <div className="grid grid-cols-4 gap-4">
-            {categories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              {categories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

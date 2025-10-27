@@ -1,4 +1,4 @@
-import { Category } from "@/types/product";
+import { Category } from "@/hooks/useCategories";
 import { Link } from "react-router-dom";
 
 interface CategoryCardProps {

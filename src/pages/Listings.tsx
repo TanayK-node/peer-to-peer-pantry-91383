@@ -2,12 +2,13 @@ import { useState } from "react";
 import { MapPin, Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import ProductCard from "@/components/ProductCard";
-import { mockProducts } from "@/data/mockData";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useProducts } from "@/hooks/useProducts";
 
 const Listings = () => {
   const [filters, setFilters] = useState(["Guberg 4 lahore", "Mobile Phones"]);
+  const { data: products = [], isLoading } = useProducts();
 
   const removeFilter = (filter: string) => {
     setFilters(filters.filter((f) => f !== filter));
@@ -69,11 +70,17 @@ const Listings = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">No products found</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </main>
 
       <BottomNav />

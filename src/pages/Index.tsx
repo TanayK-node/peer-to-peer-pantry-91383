@@ -2,12 +2,16 @@ import { MapPin, Search, ChevronDown } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
-import { categories, mockProducts } from "@/data/mockData";
 import { Link } from "react-router-dom";
+import { useCategories } from "@/hooks/useCategories";
+import { useProducts } from "@/hooks/useProducts";
 
 const Index = () => {
-  const recentlyViewed = mockProducts.slice(0, 3);
-  const newlyAdded = mockProducts.slice(3, 6);
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: allProducts = [], isLoading: productsLoading } = useProducts(6);
+
+  const recentlyViewed = allProducts.slice(0, 3);
+  const newlyAdded = allProducts.slice(3, 6);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -47,11 +51,15 @@ const Index = () => {
         {/* Category Section */}
         <section className="mb-8">
           <h2 className="text-lg font-bold text-foreground mb-4">Category</h2>
-          <div className="grid grid-cols-4 gap-4">
-            {categories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
+          {categoriesLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              {categories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Recently Viewed Section */}
@@ -62,11 +70,17 @@ const Index = () => {
               View All
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recentlyViewed.map((product) => (
-              <ProductCard key={product.id} product={product} showFeatured={false} />
-            ))}
-          </div>
+          {productsLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading products...</div>
+          ) : recentlyViewed.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No products yet</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentlyViewed.map((product) => (
+                <ProductCard key={product.id} product={product} showFeatured={false} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Newly Added Section */}
@@ -77,11 +91,17 @@ const Index = () => {
               View All
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {newlyAdded.map((product) => (
-              <ProductCard key={product.id} product={product} showFeatured={false} />
-            ))}
-          </div>
+          {productsLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading products...</div>
+          ) : newlyAdded.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No products yet</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {newlyAdded.map((product) => (
+                <ProductCard key={product.id} product={product} showFeatured={false} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
 

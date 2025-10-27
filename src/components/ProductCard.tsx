@@ -1,7 +1,8 @@
-import { Product } from "@/types/product";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "./ui/badge";
+import { Product } from "@/hooks/useProducts";
+import { format } from "date-fns";
 
 interface ProductCardProps {
   product: Product;
@@ -9,12 +10,14 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
+  const imageUrl = product.image_urls?.[0] || "/placeholder.svg";
+  const formattedDate = format(new Date(product.created_at), "MMM dd");
   return (
     <Link to={`/product/${product.id}`} className="block">
       <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="relative aspect-video bg-muted">
           <img
-            src={product.image}
+            src={imageUrl}
             alt={product.title}
             className="w-full h-full object-cover"
           />
@@ -30,13 +33,13 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
         <div className="p-3">
           <h3 className="font-semibold text-foreground mb-1">{product.title}</h3>
           <div className="flex justify-between items-center mb-1">
-            <p className="text-xs text-muted-foreground">{product.condition}</p>
-            <p className="text-xs text-muted-foreground">{product.postedDate}</p>
+            <p className="text-xs text-muted-foreground capitalize">{product.condition.replace(/_/g, ' ')}</p>
+            <p className="text-xs text-muted-foreground">{formattedDate}</p>
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">{product.location}</p>
+            <p className="text-sm text-muted-foreground">{product.location || "Location not set"}</p>
             <p className="text-lg font-bold text-foreground">
-              $ {product.price.toLocaleString()}
+              $ {Number(product.price).toLocaleString()}
             </p>
           </div>
         </div>
