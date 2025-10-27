@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft, Upload, X, Image as ImageIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCategories } from "@/hooks/useCategories";
 import { useCreateProduct } from "@/hooks/useCreateProduct";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const productSchema = z.object({
@@ -36,23 +37,91 @@ const Sell = () => {
     condition: "good" as const,
     location: "",
   });
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth?redirect=/sell");
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    if (images.length + files.length > 5) {
+      toast({
+        title: "Too many images",
+        description: "You can upload a maximum of 5 images",
+        variant: "destructive",
+      });
+      return;
     }
-  }, [user, authLoading, navigate]);
+
+    setImages([...images, ...files]);
+    
+    // Create previews
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+  };
+
+  const uploadImages = async (): Promise<string[]> => {
+    if (images.length === 0) return [];
+
+    setUploadingImages(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const image of images) {
+        const fileExt = image.name.split('.').pop();
+        const fileName = `${user!.id}/${Date.now()}-${Math.random()}.${fileExt}`;
+        
+        const { error: uploadError, data } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, image);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(publicUrl);
+      }
+    } finally {
+      setUploadingImages(false);
+    }
+
+    return uploadedUrls;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
+    if (images.length === 0) {
+      toast({
+        title: "No images",
+        description: "Please upload at least one image",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const validated = productSchema.parse({
         ...formData,
         price: parseFloat(formData.price),
       });
+
+      const imageUrls = await uploadImages();
 
       await createProduct.mutateAsync({
         title: validated.title,
@@ -61,7 +130,7 @@ const Sell = () => {
         condition: validated.condition,
         category_id: validated.category_id,
         location: validated.location,
-        image_urls: [],
+        image_urls: imageUrls,
       });
 
       navigate("/");
@@ -106,25 +175,66 @@ const Sell = () => {
       <main className="max-w-screen-xl mx-auto">
         <form onSubmit={handleSubmit}>
           {/* Image Upload Section */}
-          <div className="flex items-center justify-center bg-muted py-16 px-4">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-card rounded-2xl mb-4">
-                <Upload className="h-12 w-12 text-muted-foreground" />
+          <div className="bg-muted py-8 px-4">
+            <input
+              type="file"
+              id="image-upload"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            
+            {imagePreviews.length === 0 ? (
+              <label
+                htmlFor="image-upload"
+                className="flex flex-col items-center justify-center cursor-pointer py-8"
+              >
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-card rounded-2xl mb-4">
+                  <Upload className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Upload product images (up to 5)</p>
+                <p className="text-xs text-muted-foreground mt-1">Click to browse</p>
+              </label>
+            ) : (
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative aspect-square">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                      {index === 0 && (
+                        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+                          Main
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {imagePreviews.length < 5 && (
+                    <label
+                      htmlFor="image-upload"
+                      className="aspect-square border-2 border-dashed border-muted-foreground/30 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                    >
+                      <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                      <p className="text-xs text-muted-foreground">Add more</p>
+                    </label>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  {imagePreviews.length}/5 images • First image will be the main photo
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">Upload product images</p>
-            </div>
-          </div>
-
-          {/* Dots indicator */}
-          <div className="flex justify-center gap-1 py-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full ${
-                  i === 1 ? "bg-muted-foreground" : "bg-muted"
-                }`}
-              />
-            ))}
+            )}
           </div>
 
           {/* Form Fields */}
@@ -235,9 +345,9 @@ const Sell = () => {
             <Button 
               type="submit" 
               className="flex-1 h-12"
-              disabled={createProduct.isPending}
+              disabled={createProduct.isPending || uploadingImages}
             >
-              {createProduct.isPending ? "Creating..." : "Create Listing"}
+              {uploadingImages ? "Uploading images..." : createProduct.isPending ? "Creating..." : "Create Listing"}
             </Button>
           </div>
         </form>
