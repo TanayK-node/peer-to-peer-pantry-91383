@@ -8,10 +8,8 @@ import { useProducts } from "@/hooks/useProducts";
 
 const Index = () => {
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
-  const { data: allProducts = [], isLoading: productsLoading } = useProducts(6);
-
-  const recentlyViewed = allProducts.slice(0, 3);
-  const newlyAdded = allProducts.slice(3, 6);
+  const { data: recentlyViewed = [], isLoading: recentlyViewedLoading } = useProducts(3);
+  const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -70,7 +68,7 @@ const Index = () => {
               View All
             </Link>
           </div>
-          {productsLoading ? (
+          {recentlyViewedLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading products...</div>
           ) : recentlyViewed.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">No products yet</div>
@@ -91,7 +89,7 @@ const Index = () => {
               View All
             </Link>
           </div>
-          {productsLoading ? (
+          {newlyAddedLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading products...</div>
           ) : newlyAdded.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">No products yet</div>

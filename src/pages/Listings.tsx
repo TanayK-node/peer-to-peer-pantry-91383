@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import ProductCard from "@/components/ProductCard";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { useProducts } from "@/hooks/useProducts";
+import { useSearchProducts } from "@/hooks/useSearchProducts";
+import { useCategories } from "@/hooks/useCategories";
 
 const Listings = () => {
-  const [filters, setFilters] = useState(["Guberg 4 lahore", "Mobile Phones"]);
-  const { data: products = [], isLoading } = useProducts();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryId = searchParams.get("category");
+  const { data: categories = [] } = useCategories();
+  const { data: products = [], isLoading } = useSearchProducts("", categoryId || undefined);
 
-  const removeFilter = (filter: string) => {
-    setFilters(filters.filter((f) => f !== filter));
+  const selectedCategory = categories.find((cat) => cat.id === categoryId);
+
+  const removeFilter = () => {
+    setSearchParams({});
   };
 
   return (
@@ -50,24 +55,19 @@ const Listings = () => {
 
       <main className="max-w-screen-xl mx-auto px-4 py-4">
         {/* Filters */}
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium">
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters (7)
-          </button>
-          {filters.map((filter) => (
+        {selectedCategory && (
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             <Badge
-              key={filter}
               variant="secondary"
               className="px-3 py-2 rounded-full flex items-center gap-2"
             >
-              {filter}
-              <button onClick={() => removeFilter(filter)}>
+              {selectedCategory.icon} {selectedCategory.name}
+              <button onClick={removeFilter}>
                 <X className="h-3 w-3" />
               </button>
             </Badge>
-          ))}
-        </div>
+          </div>
+        )}
 
         {/* Products Grid */}
         {isLoading ? (
