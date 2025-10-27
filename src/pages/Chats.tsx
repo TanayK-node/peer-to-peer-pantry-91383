@@ -35,7 +35,7 @@ const Chats = () => {
 
         {/* Filter Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-2">
-          {["All", "Unread", "Important", "Selling Fast", "Popular"].map((filter) => (
+          {["All", "Unread"].map((filter) => (
             <button
               key={filter}
               className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ${
