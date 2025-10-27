@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { MapPin, Search, ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import ProductCard from "@/components/ProductCard";
 import { Link, useSearchParams } from "react-router-dom";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSearchProducts, SearchFilters } from "@/hooks/useSearchProducts";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,25 +32,21 @@ const Listings = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="sticky top-0 bg-card border-b border-border z-40 px-4 py-3">
+      <header className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border z-40 px-4 py-4 shadow-sm">
         <div className="max-w-screen-xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">📚</span>
+          <div className="flex items-center justify-between mb-4">
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
+                <span className="text-white text-2xl">📚</span>
               </div>
-              <h1 className="text-xl font-bold text-primary">CampusTrades</h1>
+              <h1 className="text-2xl font-bold text-primary">CampusTrades</h1>
             </Link>
-            {/* <button className="flex items-center gap-1 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              <span>Location, xyz</span>
-              <ChevronDown className="h-4 w-4" />
-            </button> */}
+            <ThemeToggle />
           </div>
           
           {/* Search Bar */}
           <Link to="/search" className="block">
-            <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-lg">
+            <div className="flex items-center gap-3 bg-muted hover:bg-muted/80 px-4 py-3 rounded-xl transition-colors border border-border/50">
               <Search className="h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
@@ -66,14 +62,14 @@ const Listings = () => {
       <main className="max-w-screen-xl mx-auto px-4 py-4">
         {/* Filters */}
         {selectedCategory && (
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
             <Badge
               variant="secondary"
-              className="px-3 py-2 rounded-full flex items-center gap-2"
+              className="px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium"
             >
               {selectedCategory.icon} {selectedCategory.name}
-              <button onClick={removeFilter}>
-                <X className="h-3 w-3" />
+              <button onClick={removeFilter} className="hover:bg-background/20 rounded-full p-0.5 transition-colors">
+                <X className="h-3.5 w-3.5" />
               </button>
             </Badge>
           </div>
@@ -81,11 +77,14 @@ const Listings = () => {
 
         {/* Products Grid */}
         {isLoading ? (
-          <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+          <div className="text-center py-16 text-muted-foreground">Loading products...</div>
         ) : products.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">No products found</div>
+          <div className="text-center py-16">
+            <p className="text-muted-foreground mb-2">No products found</p>
+            <p className="text-sm text-muted-foreground">Try adjusting your filters</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -7,11 +7,11 @@ interface CategoryCardProps {
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
-    <Link to={`/listings?category=${category.id}`} className="flex flex-col items-center gap-2">
-      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-        <span className="text-3xl">{category.icon}</span>
+    <Link to={`/listings?category=${category.id}`} className="flex flex-col items-center gap-3 group">
+      <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center hover:from-primary/20 hover:to-primary/10 transition-all duration-300 border border-border/50 group-hover:border-primary/30 group-hover:scale-105 shadow-sm group-hover:shadow-md">
+        <span className="text-4xl transition-transform group-hover:scale-110">{category.icon}</span>
       </div>
-      <span className="text-xs font-medium text-center text-foreground">{category.name}</span>
+      <span className="text-sm font-semibold text-center text-foreground group-hover:text-primary transition-colors">{category.name}</span>
     </Link>
   );
 };
