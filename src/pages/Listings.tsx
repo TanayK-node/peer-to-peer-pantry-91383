@@ -7,6 +7,7 @@ import { useSearchProducts, SearchFilters } from "@/hooks/useSearchProducts";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import logo from "@/assets/logo.png";
 
 const Listings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,8 +37,8 @@ const Listings = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
-                <span className="text-white text-2xl">📚</span>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105">
+                <img src={logo} alt="CampusTrades Logo" className="w-10 h-10 object-contain" />
               </div>
               <h1 className="text-2xl font-bold text-primary">CampusTrades</h1>
             </Link>
