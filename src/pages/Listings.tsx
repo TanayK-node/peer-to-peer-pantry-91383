@@ -41,11 +41,11 @@ const Listings = () => {
               </div>
               <h1 className="text-xl font-bold text-primary">CampusTrades</h1>
             </Link>
-            <button className="flex items-center gap-1 text-sm text-muted-foreground">
+            {/* <button className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span>Location, xyz</span>
               <ChevronDown className="h-4 w-4" />
-            </button>
+            </button> */}
           </div>
           
           {/* Search Bar */}
