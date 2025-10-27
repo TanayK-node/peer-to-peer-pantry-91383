@@ -35,12 +35,12 @@ const Listings = () => {
       <header className="sticky top-0 bg-card border-b border-border z-40 px-4 py-3">
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white text-xl">📚</span>
               </div>
               <h1 className="text-xl font-bold text-primary">CampusTrades</h1>
-            </div>
+            </Link>
             <button className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span>Location, xyz</span>
