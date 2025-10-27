@@ -4,12 +4,54 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BottomNav from "@/components/BottomNav";
 import { useProduct } from "@/hooks/useProducts";
+import { useAuth } from "@/contexts/AuthContext";
+import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const { data: product, isLoading } = useProduct(id || "");
+  const { data: isFavorite = false } = useIsFavorite(id || "", user?.id);
+  const toggleFavorite = useToggleFavorite();
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product?.title,
+          text: product?.description,
+          url: url,
+        });
+      } catch (error) {
+        console.log("Share cancelled");
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link copied!",
+        description: "Product link has been copied to clipboard",
+      });
+    }
+  };
+
+  const handleFavorite = () => {
+    if (!user) {
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+
+    toggleFavorite.mutate({
+      productId: id || "",
+      userId: user.id,
+      isFavorite,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -44,11 +86,17 @@ const ProductDetail = () => {
           </button>
           <h1 className="text-lg font-semibold">Post Name</h1>
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-muted rounded-full">
+            <button 
+              onClick={handleShare}
+              className="p-2 hover:bg-muted rounded-full"
+            >
               <Share2 className="h-5 w-5" />
             </button>
-            <button className="p-2 hover:bg-muted rounded-full">
-              <Heart className="h-5 w-5" />
+            <button 
+              onClick={handleFavorite}
+              className="p-2 hover:bg-muted rounded-full"
+            >
+              <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
             </button>
           </div>
         </div>

@@ -7,10 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCurrentUserProfile, useUserProducts } from "@/hooks/useProfile";
+import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+import ProductCard from "@/components/ProductCard";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ const Profile = () => {
     : useCurrentUserProfile();
 
   const { data: userProducts = [], isLoading: productsLoading } = useUserProducts(profileUserId);
+  const { data: favorites = [], isLoading: favoritesLoading } = useFavorites(isOwnProfile ? user?.id : undefined);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -133,55 +136,32 @@ const Profile = () => {
                 {isOwnProfile ? "You haven't listed any products yet" : "No products listed"}
               </div>
             ) : (
-              <div className="space-y-4">
-                {userProducts.map((product) => {
-                  const imageUrl = product.image_urls?.[0] || "/placeholder.svg";
-                  const formattedDate = format(new Date(product.created_at), "MMM dd");
-                  
-                  return (
-                    <Link 
-                      key={product.id} 
-                      to={`/product/${product.id}`}
-                      className="block"
-                    >
-                      <div className="bg-card rounded-lg p-4 flex gap-4 hover:shadow-md transition-shadow">
-                        <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                          <img
-                            src={imageUrl}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
-                          {product.featured && (
-                            <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground text-xs">
-                              Featured
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-lg font-bold mb-1">$ {Number(product.price).toLocaleString()}</p>
-                          <h3 className="font-semibold text-sm mb-1">{product.title}</h3>
-                          <p className="text-xs text-muted-foreground mb-2 capitalize">
-                            {product.condition.replace(/_/g, ' ')}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              📍 {product.location || "Location not set"}
-                            </span>
-                            <span>{formattedDate}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-4">
+                {userProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} showFeatured={false} />
+                ))}
               </div>
             )}
           </TabsContent>
           
           <TabsContent value="saved" className="mt-0">
-            <div className="text-center py-12 text-muted-foreground">
-              No saved items yet
-            </div>
+            {!isOwnProfile ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Only available on your own profile
+              </div>
+            ) : favoritesLoading ? (
+              <div className="text-center py-12 text-muted-foreground">Loading favorites...</div>
+            ) : favorites.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                No saved items yet
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {favorites.map((fav) => (
+                  fav.products && <ProductCard key={fav.id} product={fav.products} showFeatured={false} />
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>

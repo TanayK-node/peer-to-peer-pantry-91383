@@ -1,8 +1,10 @@
 import { Heart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "./ui/badge";
 import { Product } from "@/hooks/useProducts";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
 
 interface ProductCardProps {
   product: Product;
@@ -10,8 +12,28 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: isFavorite = false } = useIsFavorite(product.id, user?.id);
+  const toggleFavorite = useToggleFavorite();
+  
   const imageUrl = product.image_urls?.[0] || "/placeholder.svg";
   const formattedDate = format(new Date(product.created_at), "MMM dd");
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+
+    toggleFavorite.mutate({
+      productId: product.id,
+      userId: user.id,
+      isFavorite,
+    });
+  };
   return (
     <Link to={`/product/${product.id}`} className="block">
       <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -26,8 +48,11 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
               Featured
             </Badge>
           )}
-          <button className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors">
-            <Heart className="h-4 w-4" />
+          <button 
+            onClick={handleFavorite}
+            className="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
           </button>
         </div>
         <div className="p-3">

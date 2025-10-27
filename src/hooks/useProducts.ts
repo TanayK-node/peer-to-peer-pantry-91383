@@ -15,14 +15,14 @@ export interface Product {
   created_at: string;
   category_id: string | null;
   seller_id: string;
-  profiles: {
+  profiles?: {
     id: string;
     full_name: string;
     avatar_url: string | null;
     rating: number;
     member_since: string;
   } | null;
-  categories: {
+  categories?: {
     id: string;
     name: string;
     icon: string;
