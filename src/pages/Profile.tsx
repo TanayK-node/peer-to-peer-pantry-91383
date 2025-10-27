@@ -188,11 +188,11 @@ const Profile = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
-                            className="absolute top-2 left-2 h-8 w-8 bg-white/90 hover:bg-white"
+                            className="absolute top-2 right-2 h-9 w-9 bg-background border-2 border-primary/20 hover:bg-primary/10 hover:border-primary shadow-lg z-10"
                           >
-                            <MoreVertical className="h-4 w-4" />
+                            <MoreVertical className="h-5 w-5 text-primary" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
