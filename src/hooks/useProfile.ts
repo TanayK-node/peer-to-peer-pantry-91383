@@ -81,3 +81,31 @@ export const useUserProducts = (userId: string | undefined) => {
     enabled: !!userId,
   });
 };
+
+export const useUserSoldProducts = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: ["userSoldProducts", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          categories (
+            id,
+            name,
+            icon,
+            slug
+          )
+        `)
+        .eq("seller_id", userId)
+        .eq("status", "sold")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!userId,
+  });
+};

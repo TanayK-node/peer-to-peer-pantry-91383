@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
-import { useProfile, useCurrentUserProfile, useUserProducts } from "@/hooks/useProfile";
+import { useProfile, useCurrentUserProfile, useUserProducts, useUserSoldProducts } from "@/hooks/useProfile";
 import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -53,6 +53,7 @@ const Profile = () => {
     : useCurrentUserProfile();
 
   const { data: userProducts = [], isLoading: productsLoading } = useUserProducts(profileUserId);
+  const { data: soldProducts = [], isLoading: soldProductsLoading } = useUserSoldProducts(profileUserId);
   const { data: favorites = [], isLoading: favoritesLoading } = useFavorites(isOwnProfile ? user?.id : undefined);
 
   const handleLogout = async () => {
@@ -167,8 +168,9 @@ const Profile = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 mb-6">
+          <TabsList className="w-full grid grid-cols-3 mb-6">
             <TabsTrigger value="listing">Listing</TabsTrigger>
+            <TabsTrigger value="sold">Sold</TabsTrigger>
             <TabsTrigger value="saved">Saved</TabsTrigger>
           </TabsList>
           
@@ -215,6 +217,22 @@ const Profile = () => {
                       </DropdownMenu>
                     )}
                   </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="sold" className="mt-0">
+            {soldProductsLoading ? (
+              <div className="text-center py-12 text-muted-foreground">Loading sold products...</div>
+            ) : soldProducts.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                {isOwnProfile ? "You haven't sold any items yet" : "No sold items"}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {soldProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} showFeatured={false} />
                 ))}
               </div>
             )}
