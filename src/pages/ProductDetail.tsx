@@ -230,14 +230,8 @@ const ProductDetail = () => {
             </div>
           )}
 
-          {/* AD ID */}
-          <div className="flex items-center justify-between text-sm">
-            <p className="text-muted-foreground">AD ID: {product.id.slice(0, 8).toUpperCase()}</p>
-            <button className="text-primary font-medium">Report AD</button>
-          </div>
-
           {/* Send Message Button */}
-          <Button 
+          <Button
             className="w-full h-12 text-base"
             onClick={handleContact}
             disabled={createConversation.isPending}
