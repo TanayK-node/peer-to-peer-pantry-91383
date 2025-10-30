@@ -11,6 +11,7 @@ export interface Conversation {
   products: {
     title: string;
     image_urls: string[];
+    price: number;
   } | null;
   buyer_profile: {
     id: string;
@@ -38,7 +39,7 @@ export const useConversations = (userId: string | undefined) => {
         .from("conversations")
         .select(`
           *,
-          products (title, image_urls),
+          products (title, image_urls, price),
           buyer_profile:profiles!buyer_id (id, full_name, avatar_url),
           seller_profile:profiles!seller_id (id, full_name, avatar_url)
         `)

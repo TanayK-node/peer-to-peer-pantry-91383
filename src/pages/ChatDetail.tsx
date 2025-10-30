@@ -1,4 +1,4 @@
-import { ArrowLeft, Send, MoreVertical } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,7 +61,7 @@ const ChatDetail = () => {
               {otherUser?.avatar_url ? (
                 <img src={otherUser.avatar_url} alt={otherUser.full_name} />
               ) : (
-                <div className="flex items-center justify-center h-full text-primary font-semibold">
+                <div className="flex items-center justify-center w-full h-full text-primary font-semibold">
                   {otherUser?.full_name?.[0]?.toUpperCase()}
                 </div>
               )}
@@ -75,9 +75,6 @@ const ChatDetail = () => {
               )}
             </div>
           </div>
-          <button className="p-2 hover:bg-muted rounded-full">
-            <MoreVertical className="h-5 w-5" />
-          </button>
         </div>
       </header>
 
@@ -94,6 +91,11 @@ const ChatDetail = () => {
             )}
             <div className="flex-1">
               <p className="text-sm font-medium">{conversation.products.title}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-semibold text-primary">
+                ${conversation.products.price}
+              </p>
             </div>
           </div>
         </div>
