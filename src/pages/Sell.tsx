@@ -19,7 +19,7 @@ const productSchema = z.object({
   price: z.number().min(0, "Price must be positive"),
   condition: z.enum(["new", "like_new", "good", "fair", "poor"]),
   category_id: z.string().uuid("Please select a category"),
-  location: z.string().min(2, "Location is required").max(100),
+  location: z.string().min(1, "Please select a location"),
 });
 
 const Sell = () => {
@@ -321,13 +321,28 @@ const Sell = () => {
 
             <div className="space-y-1">
               <label className="block text-sm font-medium">Location *</label>
-              <Input
+              <Select
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Campus Building 4"
-                className="h-12"
-                required
-              />
+                onValueChange={(value) => setFormData({ ...formData, location: value })}
+              >
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="Select campus location" />
+                </SelectTrigger>
+                <SelectContent className="bg-card z-50">
+                  <SelectItem value="George Vari Engineering and Computing Centre (ENG)">George Vari Engineering and Computing Centre (ENG)</SelectItem>
+                  <SelectItem value="Daphne Cockwell Health Sciences Complex (DCC)">Daphne Cockwell Health Sciences Complex (DCC)</SelectItem>
+                  <SelectItem value="Kerr Hall">Kerr Hall</SelectItem>
+                  <SelectItem value="Student Learning Centre (SLC)">Student Learning Centre (SLC)</SelectItem>
+                  <SelectItem value="Library Building (LIB)">Library Building (LIB)</SelectItem>
+                  <SelectItem value="Centre for Urban Innovation (CUI)">Centre for Urban Innovation (CUI)</SelectItem>
+                  <SelectItem value="Jorgenson Hall">Jorgenson Hall</SelectItem>
+                  <SelectItem value="International Living/Learning Centre (ILC)">International Living/Learning Centre (ILC)</SelectItem>
+                  <SelectItem value="Ted Rogers School Of Management">Ted Rogers School Of Management</SelectItem>
+                  <SelectItem value="Architecture Building (ARC)">Architecture Building (ARC)</SelectItem>
+                  <SelectItem value="The Chang School of continuing education">The Chang School of continuing education</SelectItem>
+                  <SelectItem value="Mattamy Athletic Centre">Mattamy Athletic Centre</SelectItem>
+                </SelectContent>
+              </Select>
               {errors.location && <p className="text-xs text-destructive">{errors.location}</p>}
             </div>
           </div>
