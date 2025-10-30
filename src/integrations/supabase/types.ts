@@ -46,6 +46,10 @@ export type Database = {
           buyer_id: string
           created_at: string
           id: string
+          is_important_buyer: boolean | null
+          is_important_seller: boolean | null
+          is_unread_buyer: boolean | null
+          is_unread_seller: boolean | null
           last_message_at: string | null
           product_id: string
           seller_id: string
@@ -54,6 +58,10 @@ export type Database = {
           buyer_id: string
           created_at?: string
           id?: string
+          is_important_buyer?: boolean | null
+          is_important_seller?: boolean | null
+          is_unread_buyer?: boolean | null
+          is_unread_seller?: boolean | null
           last_message_at?: string | null
           product_id: string
           seller_id: string
@@ -62,6 +70,10 @@ export type Database = {
           buyer_id?: string
           created_at?: string
           id?: string
+          is_important_buyer?: boolean | null
+          is_important_seller?: boolean | null
+          is_unread_buyer?: boolean | null
+          is_unread_seller?: boolean | null
           last_message_at?: string | null
           product_id?: string
           seller_id?: string

@@ -8,6 +8,10 @@ export interface Conversation {
   seller_id: string;
   last_message_at: string | null;
   created_at: string;
+  is_unread_buyer?: boolean;
+  is_unread_seller?: boolean;
+  is_important_buyer?: boolean;
+  is_important_seller?: boolean;
   products: {
     title: string;
     image_urls: string[];
