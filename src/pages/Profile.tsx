@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Share2, Star, Heart, LogOut, MoreVertical, Trash2, Edit, CheckCircle } from "lucide-react";
+import { ArrowLeft, Share2, Star, Heart, LogOut, MoreVertical, Trash2, Edit, CheckCircle, MessageCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useCurrentUserProfile, useUserProducts, useUserSoldProducts } from "@/hooks/useProfile";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useConversations } from "@/hooks/useConversations";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -55,6 +56,7 @@ const Profile = () => {
   const { data: userProducts = [], isLoading: productsLoading } = useUserProducts(profileUserId);
   const { data: soldProducts = [], isLoading: soldProductsLoading } = useUserSoldProducts(profileUserId);
   const { data: favorites = [], isLoading: favoritesLoading } = useFavorites(isOwnProfile ? user?.id : undefined);
+  const { data: conversations = [] } = useConversations(user?.id);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -88,6 +90,24 @@ const Profile = () => {
 
   const handleEditProduct = (productId: string) => {
     navigate(`/product/${productId}/edit`);
+  };
+
+  const handleSendMessage = () => {
+    // Find existing conversation between current user and profile user
+    const existingConversation = conversations.find(
+      (conv) =>
+        (conv.buyer_id === user?.id && conv.seller_id === profileUserId) ||
+        (conv.seller_id === user?.id && conv.buyer_id === profileUserId)
+    );
+
+    if (existingConversation) {
+      navigate(`/chats/${existingConversation.id}`);
+    } else {
+      toast({
+        title: "No conversation yet",
+        description: "Browse their listings and click 'Message Seller' to start a conversation.",
+      });
+    }
   };
 
   if (profileLoading) {
@@ -159,9 +179,14 @@ const Profile = () => {
               {profile.bio}
             </p>
           )}
-          {isOwnProfile && (
+          {isOwnProfile ? (
             <Button className="px-8" onClick={() => navigate("/profile/edit")}>
               Edit Profile
+            </Button>
+          ) : (
+            <Button className="px-8" onClick={handleSendMessage}>
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Send Message
             </Button>
           )}
         </div>
