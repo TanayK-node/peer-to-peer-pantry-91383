@@ -11,11 +11,11 @@ const BottomNav = () => {
     { icon: Home, label: "Home", path: "/" },
     { icon: MessageCircle, label: "Chats", path: "/chats" },
     { icon: PlusCircle, label: "Sell", path: "/sell" },
-    { icon: User, label: "Account", path: "/profile" },
+    { icon: User, label: "Account", path: "/account" },
   ];
 
   const handleNavigation = (path: string) => {
-    if (path === "/profile" && !user) {
+    if (path === "/account" && !user) {
       navigate("/auth");
       return;
     }
