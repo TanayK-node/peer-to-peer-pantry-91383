@@ -177,7 +177,7 @@ const ProductDetail = () => {
 
         {/* Details Section */}
         <div className="px-4 py-6 space-y-4 lg:flex-1 lg:px-0">
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">Title</p>
               <p className="font-medium">{product.title}</p>
@@ -194,7 +194,7 @@ const ProductDetail = () => {
               <p className="text-muted-foreground mb-1">Condition</p>
               <p className="font-medium">{product.condition}</p>
             </div>
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <p className="text-muted-foreground mb-1">Meetup Preference</p>
               <p className="font-medium">{product.condition}</p>
             </div>
