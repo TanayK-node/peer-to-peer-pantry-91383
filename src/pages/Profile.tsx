@@ -207,7 +207,7 @@ const Profile = () => {
                 {isOwnProfile ? "You haven't listed any products yet" : "No products listed"}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {userProducts.map((product) => (
                   <div key={product.id} className="relative">
                     <ProductCard product={product} showFeatured={false} />
@@ -255,7 +255,7 @@ const Profile = () => {
                 {isOwnProfile ? "You haven't sold any items yet" : "No sold items"}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {soldProducts.map((product) => (
                   <ProductCard key={product.id} product={product} showFeatured={false} />
                 ))}
@@ -275,7 +275,7 @@ const Profile = () => {
                 No saved items yet
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {favorites.map((fav) => (
                   fav.products && <ProductCard key={fav.id} product={fav.products} showFeatured={false} />
                 ))}
