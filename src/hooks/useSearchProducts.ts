@@ -33,8 +33,8 @@ export const useSearchProducts = (searchQuery: string, filters?: SearchFilters) 
         `)
         .eq("status", "available");
 
-      if (searchQuery) {
-        query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      if (searchQuery && searchQuery.trim()) {
+        query = query.or(`title.ilike.%${searchQuery.trim()}%,description.ilike.%${searchQuery.trim()}%`);
       }
 
       if (filters?.categoryId) {
@@ -60,6 +60,6 @@ export const useSearchProducts = (searchQuery: string, filters?: SearchFilters) 
       if (error) throw error;
       return data as Product[];
     },
-    enabled: searchQuery.length > 0 || !!filters?.categoryId || !!filters?.condition || filters?.minPrice !== undefined || filters?.maxPrice !== undefined,
+    enabled: (searchQuery && searchQuery.trim().length > 0) || !!filters?.categoryId || !!filters?.condition || filters?.minPrice !== undefined || filters?.maxPrice !== undefined,
   });
 };

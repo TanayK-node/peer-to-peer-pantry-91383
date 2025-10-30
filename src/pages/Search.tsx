@@ -167,10 +167,10 @@ const Search = () => {
         </div>
 
         {/* Search Results */}
-        {searchQuery && (
+        {(searchQuery.trim() || activeFiltersCount > 0) && (
           <section className="mb-8">
             <h2 className="text-base font-semibold text-primary mb-4">
-              Search Results {searchResults.length > 0 && `(${searchResults.length})`}
+              {searchQuery.trim() ? `Search Results ${searchResults.length > 0 ? `(${searchResults.length})` : ''}` : 'Filtered Results'}
             </h2>
             {isSearching ? (
               <div className="text-center py-8 text-muted-foreground">Searching...</div>
@@ -182,7 +182,7 @@ const Search = () => {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                No products found for "{searchQuery}"
+                No products found{searchQuery.trim() ? ` for "${searchQuery}"` : ' with these filters'}
               </div>
             )}
           </section>
@@ -203,7 +203,6 @@ const Search = () => {
                     key={category.id}
                     onClick={() => {
                       setFilters({ ...filters, categoryId: category.id });
-                      setSearchQuery(" ");
                     }}
                   >
                     <CategoryCard category={category} />
