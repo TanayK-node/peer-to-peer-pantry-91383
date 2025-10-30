@@ -20,7 +20,16 @@ export const useCategories = () => {
         .order("name");
 
       if (error) throw error;
-      return data as Category[];
+      
+      // Move "Other Items" to the end
+      const categories = data as Category[];
+      const otherItemsIndex = categories.findIndex(cat => cat.slug === 'other-items');
+      if (otherItemsIndex > -1) {
+        const otherItems = categories.splice(otherItemsIndex, 1)[0];
+        categories.push(otherItems);
+      }
+      
+      return categories;
     },
   });
 };

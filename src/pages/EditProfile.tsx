@@ -22,7 +22,6 @@ const EditProfile = () => {
     full_name: profile?.full_name || "",
     bio: profile?.bio || "",
     location: profile?.location || "",
-    phone: profile?.phone || "",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || "");
@@ -74,7 +73,6 @@ const EditProfile = () => {
           full_name: formData.full_name,
           bio: formData.bio,
           location: formData.location,
-          phone: formData.phone,
           avatar_url,
         })
         .eq("id", user.id);
@@ -179,18 +177,6 @@ const EditProfile = () => {
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder="City, State"
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="+1 (555) 000-0000"
             />
           </div>
 
