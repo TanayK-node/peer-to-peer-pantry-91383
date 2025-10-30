@@ -1,4 +1,5 @@
-import { ArrowLeft, Mail, MessageSquare, Phone, MapPin } from "lucide-react";
+import { ArrowLeft, Mail, MessageSquare, Instagram } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -68,16 +69,16 @@ const ContactUs = () => {
       description: "Send us an email anytime",
     },
     {
-      icon: Phone,
-      title: "Phone",
-      value: "+1 (555) 123-4567",
-      description: "Mon-Fri, 9AM-5PM EST",
+      icon: Instagram,
+      title: "Instagram",
+      value: "@campusmarket",
+      description: "Follow us for updates",
     },
     {
-      icon: MapPin,
-      title: "Campus Location",
-      value: "Student Services Building, Room 205",
-      description: "Visit us during office hours",
+      icon: SiTiktok,
+      title: "TikTok",
+      value: "@campusmarket",
+      description: "Check out our content",
     },
   ];
 

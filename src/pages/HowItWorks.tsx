@@ -1,4 +1,4 @@
-import { ArrowLeft, ShoppingBag, MessageSquare, DollarSign, Search } from "lucide-react";
+import { ArrowLeft, User, Package, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 
@@ -7,24 +7,19 @@ const HowItWorks = () => {
 
   const steps = [
     {
-      icon: Search,
-      title: "Browse or Search",
-      description: "Explore products by category or use the search feature to find exactly what you need from fellow students.",
+      icon: User,
+      title: "Login with TMU email",
+      description: "Login using your @torontomu.ca email to join our verified student marketplace.",
     },
     {
-      icon: MessageSquare,
-      title: "Message the Seller",
-      description: "Contact sellers directly through our built-in chat to ask questions, negotiate prices, or arrange meetups.",
+      icon: Package,
+      title: "Browse or Sell",
+      description: "Whether buying or selling, easily upload pictures, write a short description, and choose your price.",
     },
     {
-      icon: DollarSign,
-      title: "Meet & Exchange",
-      description: "Meet safely on campus at your preferred location and complete the transaction in person.",
-    },
-    {
-      icon: ShoppingBag,
-      title: "List Your Items",
-      description: "Got something to sell? Create a listing with photos, set your price, and connect with interested buyers.",
+      icon: MessageCircle,
+      title: "Meet & swap payment",
+      description: "Use our built-in chat to connect and meet up on campus.",
     },
   ];
 
@@ -36,53 +31,72 @@ const HowItWorks = () => {
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-muted rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-xl font-bold">How it Works</h1>
+          <h1 className="text-xl font-bold">How it Works?</h1>
         </div>
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 py-6">
         {/* Introduction */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-3">Welcome to Campus Marketplace</h2>
-          <p className="text-muted-foreground">
-            Your go-to platform for buying and selling items within the campus community. 
-            Here's how to get started:
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-3">
+            The exclusive marketplace for <span className="text-primary">Toronto Metropolitan University</span> students.
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            A secure place to buy and sell books, electronics, and dorm essentials with fellow verified TMU students.
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="space-y-6">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                    {index + 1}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg">{step.title}</h3>
-                  </div>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </div>
-              </div>
-            );
-          })}
+        {/* Hero Image Placeholder */}
+        <div className="mb-6 rounded-lg overflow-hidden bg-muted h-48 flex items-center justify-center">
+          <p className="text-muted-foreground">Campus Image</p>
         </div>
 
-        {/* Safety Tips */}
-        <div className="mt-8 p-4 bg-muted rounded-lg">
-          <h3 className="font-semibold text-lg mb-2">Safety Tips</h3>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Always meet in public campus locations during daylight hours</li>
-            <li>• Inspect items carefully before purchasing</li>
-            <li>• Trust your instincts - if something feels off, walk away</li>
-            <li>• Never share personal banking information</li>
-            <li>• Report suspicious activity to campus security</li>
-          </ul>
+        {/* Steps Section */}
+        <div className="mb-8">
+          <h3 className="font-semibold text-lg mb-4">Here's how you can start selling:</h3>
+          <div className="space-y-4">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div key={index} className="flex gap-4 items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h4 className="font-semibold mb-1">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Trust & Safety */}
+        <div className="mt-8 p-4 bg-card border border-border rounded-lg">
+          <h3 className="font-semibold text-lg mb-4 text-center">Trust & Safety</h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-xs text-muted-foreground">Verified Students</p>
+            </div>
+            <div>
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                <MessageCircle className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-xs text-muted-foreground">Secure Chat</p>
+            </div>
+            <div>
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Package className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-xs text-muted-foreground">Safe Meetups</p>
+            </div>
+          </div>
         </div>
       </main>
 
