@@ -9,6 +9,13 @@ import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
 import { useCreateConversation } from "@/hooks/useCreateConversation";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -140,30 +147,32 @@ const ProductDetail = () => {
       <main className="max-w-screen-xl mx-auto lg:flex lg:gap-6 lg:px-4 lg:py-6">
         {/* Image Section */}
         <div className="lg:flex-1 lg:sticky lg:top-20 lg:self-start">
-          <div className="relative aspect-video bg-muted">
-            <img
-              src={imageUrl}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
-            {product.featured && (
-              <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
-                Featured
-              </Badge>
-            )}
+          <Carousel className="w-full">
+            <CarouselContent>
+              {product.image_urls.map((url, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative aspect-video bg-muted">
+                    <img
+                      src={url}
+                      alt={`${product.title} - Image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {product.featured && index === 0 && (
+                      <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
             {product.image_urls.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
-                {product.image_urls.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i === 0 ? "bg-white" : "bg-white/50"
-                    }`}
-                  />
-                ))}
-              </div>
+              <>
+                <CarouselPrevious className="left-2" />
+                <CarouselNext className="right-2" />
+              </>
             )}
-          </div>
+          </Carousel>
         </div>
 
         {/* Details Section */}

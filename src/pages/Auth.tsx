@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import logo from "@/assets/logo.png";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -105,9 +106,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-4xl">C</span>
-          </div>
+          <img src={logo} alt="CampusTrades Logo" className="w-20 h-20 object-contain" />
         </div>
 
         {/* Title */}
