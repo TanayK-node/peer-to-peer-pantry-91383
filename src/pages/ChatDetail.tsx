@@ -1,6 +1,6 @@
 import { ArrowLeft, Send } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversations } from "@/hooks/useConversations";
 import { useMessages, useSendMessage } from "@/hooks/useMessages";
@@ -9,17 +9,44 @@ import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatDetail = () => {
   const navigate = useNavigate();
   const { conversationId } = useParams();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [messageText, setMessageText] = useState("");
 
   const { data: conversations } = useConversations(user?.id);
   const conversation = conversations?.find((c) => c.id === conversationId);
   const { data: messages } = useMessages(conversationId);
   const sendMessage = useSendMessage();
+
+  // Mark conversation as read when opened
+  useEffect(() => {
+    const markAsRead = async () => {
+      if (!conversation || !user) return;
+
+      const isBuyer = user.id === conversation.buyer_id;
+      const isUnread = isBuyer ? conversation.is_unread_buyer : conversation.is_unread_seller;
+
+      if (isUnread) {
+        const field = isBuyer ? 'is_unread_buyer' : 'is_unread_seller';
+        
+        await supabase
+          .from('conversations')
+          .update({ [field]: false })
+          .eq('id', conversationId);
+
+        // Invalidate conversations cache to update the list
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      }
+    };
+
+    markAsRead();
+  }, [conversation, conversationId, user, queryClient]);
 
   const otherUser =
     user?.id === conversation?.buyer_id
