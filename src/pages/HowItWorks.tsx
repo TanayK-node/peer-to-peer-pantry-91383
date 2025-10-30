@@ -47,9 +47,9 @@ const HowItWorks = () => {
         </div>
 
         {/* Hero Image Placeholder */}
-        <div className="mb-6 rounded-lg overflow-hidden bg-muted h-48 flex items-center justify-center">
-          <p className="text-muted-foreground">Campus Image</p>
-        </div>
+        {/* <div className="mb-6 rounded-lg overflow-hidden bg-muted h-48 flex items-center justify-center">
+          <img src="https://vastoverseaseducation.com/wp-content/uploads/2023/11/Toronto-Metropolitan-University-1-1024x529.jpg"/>
+        </div> */}
 
         {/* Steps Section */}
         <div className="mb-8">
