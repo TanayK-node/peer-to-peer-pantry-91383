@@ -137,35 +137,37 @@ const ProductDetail = () => {
         </div>
       </header>
 
-      <main className="max-w-screen-xl mx-auto">
+      <main className="max-w-screen-xl mx-auto lg:flex lg:gap-6 lg:px-4 lg:py-6">
         {/* Image Section */}
-        <div className="relative aspect-video bg-muted">
-          <img
-            src={imageUrl}
-            alt={product.title}
-            className="w-full h-full object-cover"
-          />
-          {product.featured && (
-            <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
-              Featured
-            </Badge>
-          )}
-          {product.image_urls.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
-              {product.image_urls.map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${
-                    i === 0 ? "bg-white" : "bg-white/50"
-                  }`}
-                />
-              ))}
-            </div>
-          )}
+        <div className="lg:flex-1 lg:sticky lg:top-20 lg:self-start">
+          <div className="relative aspect-video bg-muted">
+            <img
+              src={imageUrl}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+            {product.featured && (
+              <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
+                Featured
+              </Badge>
+            )}
+            {product.image_urls.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
+                {product.image_urls.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${
+                      i === 0 ? "bg-white" : "bg-white/50"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Details Section */}
-        <div className="px-4 py-6 space-y-4">
+        <div className="px-4 py-6 space-y-4 lg:flex-1 lg:px-0">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">Title</p>

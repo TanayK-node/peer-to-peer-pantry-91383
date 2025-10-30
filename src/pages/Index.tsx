@@ -10,7 +10,6 @@ import logo from "@/assets/logo.png";
 
 const Index = () => {
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
-  const { data: recentlyViewed = [], isLoading: recentlyViewedLoading } = useProducts(3);
   const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
 
   return (
@@ -53,27 +52,6 @@ const Index = () => {
             <div className="grid grid-cols-4 gap-4">
               {categories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Recently Viewed Section */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-bold text-foreground">Recently Viewed</h2>
-            <Link to="/listings" className="text-sm text-primary font-semibold hover:underline">
-              View All
-            </Link>
-          </div>
-          {recentlyViewedLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading products...</div>
-          ) : recentlyViewed.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No products yet</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentlyViewed.map((product) => (
-                <ProductCard key={product.id} product={product} showFeatured={false} />
               ))}
             </div>
           )}
