@@ -63,7 +63,7 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground line-clamp-1">{product.location || "Location not set"}</p>
-            <p className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <p className="text-xl font-bold text-primary">
               ${Number(product.price).toLocaleString()}
             </p>
           </div>
