@@ -2,15 +2,25 @@ import { Search } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/hooks/useProducts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "@/assets/logo.png";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-20">
