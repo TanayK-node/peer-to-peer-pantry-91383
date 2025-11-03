@@ -36,12 +36,12 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
   };
   return (
     <Link to={`/product/${product.id}`} className="block group">
-      <div className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-        <div className="relative aspect-video bg-muted overflow-hidden">
+      <div className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-glow hover:-translate-y-1">
+        <div className="relative aspect-video bg-gradient-subtle overflow-hidden">
           <img
             src={imageUrl}
             alt={product.title}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
           />
           {showFeatured && product.featured && (
             <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground font-semibold shadow-md">
@@ -50,20 +50,20 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
           )}
           <button 
             onClick={handleFavorite}
-            className="absolute top-3 right-3 p-2 bg-background/90 backdrop-blur-sm rounded-full hover:bg-background transition-all hover:scale-110"
+            className="absolute top-3 right-3 p-2.5 bg-background/95 backdrop-blur-md rounded-full hover:bg-background transition-all duration-200 hover:scale-110 shadow-soft active:scale-95"
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : "text-foreground"}`} />
+            <Heart className={`h-4 w-4 transition-all ${isFavorite ? "fill-red-500 text-red-500 scale-110" : "text-foreground"}`} />
           </button>
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-foreground mb-2 line-clamp-1">{product.title}</h3>
-          <div className="flex justify-between items-center mb-2">
-            <p className="text-xs text-muted-foreground capitalize font-medium">{product.condition.replace(/_/g, ' ')}</p>
+        <div className="p-5">
+          <h3 className="font-semibold text-foreground mb-3 line-clamp-1 text-base">{product.title}</h3>
+          <div className="flex justify-between items-center mb-3">
+            <p className="text-xs text-muted-foreground capitalize font-medium bg-muted px-3 py-1 rounded-full">{product.condition.replace(/_/g, ' ')}</p>
             <p className="text-xs text-muted-foreground">{formattedDate}</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground line-clamp-1">{product.location || "Location not set"}</p>
-            <p className="text-xl font-bold text-primary">
+            <p className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               ${Number(product.price).toLocaleString()}
             </p>
           </div>
