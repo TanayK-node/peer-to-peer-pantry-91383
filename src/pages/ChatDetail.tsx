@@ -95,7 +95,12 @@ const ChatDetail = () => {
               )}
             </Avatar>
             <div>
-              <h1 className="font-semibold">{otherUser?.full_name}</h1>
+              <button
+                onClick={() => navigate(`/profile/${otherUser?.id}`)}
+                className="font-semibold hover:underline text-left"
+              >
+                {otherUser?.full_name}
+              </button>
               {conversation.products && (
                 <p className="text-xs text-muted-foreground">
                   {conversation.products.title}
