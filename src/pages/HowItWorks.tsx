@@ -52,7 +52,7 @@ const HowItWorks = () => {
           <img 
             src={campusImage} 
             alt="Toronto Metropolitan University Campus" 
-            className="w-full h-64 object-cover"
+            className="w-full h-auto object-contain"
           />
         </div>
 
