@@ -40,8 +40,9 @@ const ChatDetail = () => {
           .update({ [field]: false })
           .eq('id', conversationId);
 
-        // Invalidate conversations cache to update the list
+        // Invalidate conversations and unread cache to update the list and notification dot
         queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["unread-conversations"] });
       }
     };
 
