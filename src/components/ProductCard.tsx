@@ -41,7 +41,7 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
           <img
             src={imageUrl}
             alt={product.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
           />
           {showFeatured && product.featured && (
             <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground font-semibold shadow-md">

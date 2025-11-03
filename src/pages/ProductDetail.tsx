@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, Share2, Star } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Star, X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BottomNav from "@/components/BottomNav";
@@ -22,6 +23,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { data: product, isLoading } = useProduct(id || "");
   const { data: isFavorite = false } = useIsFavorite(id || "", user?.id);
   const toggleFavorite = useToggleFavorite();
@@ -151,11 +153,14 @@ const ProductDetail = () => {
             <CarouselContent>
               {product.image_urls.map((url, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative aspect-video bg-muted">
+                  <div 
+                    className="relative aspect-video bg-muted cursor-pointer"
+                    onClick={() => setSelectedImage(url)}
+                  >
                     <img
                       src={url}
                       alt={`${product.title} - Image ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                     {product.featured && index === 0 && (
                       <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
@@ -174,6 +179,27 @@ const ProductDetail = () => {
             )}
           </Carousel>
         </div>
+
+        {/* Image Zoom Modal */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button 
+              className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
+            <img 
+              src={selectedImage} 
+              alt={product.title}
+              className="max-w-full max-h-[90vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )}
 
         {/* Details Section */}
         <div className="px-4 py-6 space-y-4 lg:flex-1 lg:px-0">
