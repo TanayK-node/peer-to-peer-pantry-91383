@@ -21,6 +21,7 @@ const Auth = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,42 +44,56 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const validationData = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : formData;
-      
-      const validated = authSchema.parse(validationData);
-
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: validated.email,
-          password: validated.password,
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+          redirectTo: `${window.location.origin}/auth`,
         });
 
         if (error) throw error;
 
         toast({
-          title: "Welcome back!",
-          description: "You've successfully logged in.",
+          title: "Password reset email sent!",
+          description: "Please check your email for the password reset link.",
         });
+        setIsForgotPassword(false);
       } else {
-        const { error } = await supabase.auth.signUp({
-          email: validated.email,
-          password: validated.password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              full_name: validated.fullName,
+        const validationData = isLogin 
+          ? { email: formData.email, password: formData.password }
+          : formData;
+        
+        const validated = authSchema.parse(validationData);
+
+        if (isLogin) {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: validated.email,
+            password: validated.password,
+          });
+
+          if (error) throw error;
+
+          toast({
+            title: "Welcome back!",
+            description: "You've successfully logged in.",
+          });
+        } else {
+          const { error } = await supabase.auth.signUp({
+            email: validated.email,
+            password: validated.password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/`,
+              data: {
+                full_name: validated.fullName,
+              },
             },
-          },
-        });
+          });
 
-        if (error) throw error;
+          if (error) throw error;
 
-        toast({
-          title: "Account created!",
-          description: "Please check your email to verify your account.",
-        });
+          toast({
+            title: "Account created!",
+            description: "Please check your email to verify your account.",
+          });
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -111,15 +126,20 @@ const Auth = () => {
 
         {/* Title */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">{isLogin ? "Login" : "Sign Up"}</h1>
+          <h1 className="text-2xl font-bold mb-2">
+            {isForgotPassword ? "Reset Password" : isLogin ? "Login" : "Sign Up"}
+          </h1>
           <p className="text-muted-foreground">
-            {isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"}
+            {isForgotPassword 
+              ? "Enter your email to receive a password reset link" 
+              : isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"
+            }
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-          {!isLogin && (
+          {!isLogin && !isForgotPassword && (
             <div className="space-y-1">
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -155,39 +175,65 @@ const Auth = () => {
             )}
           </div>
 
-          <div className="space-y-1">
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="password"
-                placeholder="Password"
-                className="pl-10 h-12"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-              />
+          {!isForgotPassword && (
+            <div className="space-y-1">
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  className="pl-10 h-12"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+              </div>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className="text-xs text-destructive">{errors.password}</p>
-            )}
-          </div>
+          )}
+
+          {isLogin && !isForgotPassword && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setIsForgotPassword(true)}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
 
           <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
-            {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
+            {loading ? "Please wait..." : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
           </Button>
         </form>
 
         {/* Toggle Login/Signup */}
         <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary font-medium"
-            >
-              {isLogin ? "Sign Up" : "Login"}
-            </button>
-          </p>
+          {isForgotPassword ? (
+            <p className="text-sm text-muted-foreground">
+              Remember your password?{" "}
+              <button
+                onClick={() => setIsForgotPassword(false)}
+                className="text-primary font-medium"
+              >
+                Back to Login
+              </button>
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-primary font-medium"
+              >
+                {isLogin ? "Sign Up" : "Login"}
+              </button>
+            </p>
+          )}
         </div>
       </div>
     </div>
