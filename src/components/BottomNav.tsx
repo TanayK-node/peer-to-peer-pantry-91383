@@ -1,11 +1,13 @@
 import { Home, MessageCircle, PlusCircle, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUnreadConversations } from "@/hooks/useUnreadConversations";
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: unreadCount = 0 } = useUnreadConversations();
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
@@ -37,7 +39,12 @@ const BottomNav = () => {
                 isActive ? "text-primary scale-105" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className={`h-6 w-6 transition-all ${isActive ? "stroke-[2.5]" : ""}`} />
+              <div className="relative">
+                <Icon className={`h-6 w-6 transition-all ${isActive ? "stroke-[2.5]" : ""}`} />
+                {item.path === "/chats" && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full border-2 border-background" />
+                )}
+              </div>
               <span className="text-xs font-semibold">{item.label}</span>
             </button>
           );
