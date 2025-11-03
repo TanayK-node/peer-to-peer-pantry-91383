@@ -113,7 +113,10 @@ const ChatDetail = () => {
 
       {/* Product Info */}
       {conversation.products && (
-        <div className="bg-card border-b border-border p-3">
+        <button
+          onClick={() => navigate(`/product/${conversation.product_id}`)}
+          className="bg-card border-b border-border p-3 hover:bg-muted/50 transition-colors text-left w-full"
+        >
           <div className="flex items-center gap-3">
             {conversation.products.image_urls?.[0] && (
               <img
@@ -131,7 +134,7 @@ const ChatDetail = () => {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       )}
 
       {/* Messages */}
