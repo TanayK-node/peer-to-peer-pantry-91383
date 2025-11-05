@@ -23,6 +23,7 @@ const Chats = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"all" | "unread" | "important">("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: conversations, isLoading } = useConversations(user?.id);
 
 
@@ -89,15 +90,24 @@ const Chats = () => {
     }
   };
 
-  // Filter conversations based on active tab
+  // Filter conversations based on active tab and search query
   const filteredConversations = conversations?.filter((conv) => {
     const isBuyer = user?.id === conv.buyer_id;
     const isUnread = isBuyer ? conv.is_unread_buyer : conv.is_unread_seller;
     const isImportant = isBuyer ? conv.is_important_buyer : conv.is_important_seller;
 
-    if (activeTab === "unread") return isUnread;
-    if (activeTab === "important") return isImportant;
-    return true; // "all" tab
+    // Tab filter
+    let tabMatch = true;
+    if (activeTab === "unread") tabMatch = isUnread || false;
+    if (activeTab === "important") tabMatch = isImportant || false;
+
+    // Search filter
+    const otherUser = isBuyer ? conv.seller_profile : conv.buyer_profile;
+    const searchMatch = searchQuery === "" || 
+      otherUser?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.products?.title?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return tabMatch && searchMatch;
   }) || [];
 
   return (
@@ -111,11 +121,18 @@ const Chats = () => {
             </button>
             <h1 className="text-xl font-bold">Chats</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-muted rounded-full">
-              <Search className="h-5 w-5" />
-            </button>
-          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
 
         {/* Filter Tabs */}

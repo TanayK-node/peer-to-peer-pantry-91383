@@ -221,8 +221,8 @@ const ProductDetail = () => {
               <p className="font-medium">{product.condition}</p>
             </div>
             <div className="md:col-span-2">
-              <p className="text-muted-foreground mb-1">Meetup Preference</p>
-              <p className="font-medium">{product.condition}</p>
+              <p className="text-muted-foreground mb-1">Meetup Location</p>
+              <p className="font-medium">{product.location || "Not specified"}</p>
             </div>
           </div>
 
