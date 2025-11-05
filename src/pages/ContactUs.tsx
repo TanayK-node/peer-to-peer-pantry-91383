@@ -65,19 +65,19 @@ const ContactUs = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "support@campusmarket.edu",
+      value: "contact.campustrades@gmail.com ",
       description: "Send us an email anytime",
     },
     {
       icon: Instagram,
       title: "Instagram",
-      value: "@campusmarket",
+      value: "@campustrades.ca",
       description: "Follow us for updates",
     },
     {
       icon: SiTiktok,
       title: "TikTok",
-      value: "@campusmarket",
+      value: "@campustrades.ca",
       description: "Check out our content",
     },
   ];
