@@ -182,6 +182,7 @@ export type Database = {
       }
       products: {
         Row: {
+          buyer_id: string | null
           category_id: string | null
           condition: Database["public"]["Enums"]["product_condition"]
           created_at: string
@@ -198,6 +199,7 @@ export type Database = {
           views: number | null
         }
         Insert: {
+          buyer_id?: string | null
           category_id?: string | null
           condition: Database["public"]["Enums"]["product_condition"]
           created_at?: string
@@ -214,6 +216,7 @@ export type Database = {
           views?: number | null
         }
         Update: {
+          buyer_id?: string | null
           category_id?: string | null
           condition?: Database["public"]["Enums"]["product_condition"]
           created_at?: string
@@ -230,6 +233,13 @@ export type Database = {
           views?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "products_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
@@ -258,6 +268,7 @@ export type Database = {
           phone: string | null
           rating: number | null
           total_ratings: number | null
+          unique_code: string
           updated_at: string
         }
         Insert: {
@@ -271,6 +282,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           total_ratings?: number | null
+          unique_code: string
           updated_at?: string
         }
         Update: {
@@ -284,9 +296,59 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           total_ratings?: number | null
+          unique_code?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      ratings: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+          seller_id: string
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          product_id: string
+          rating: number
+          seller_id: string
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          seller_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -315,6 +377,7 @@ export type Database = {
     }
     Functions: {
       delete_old_chats: { Args: never; Returns: undefined }
+      generate_unique_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

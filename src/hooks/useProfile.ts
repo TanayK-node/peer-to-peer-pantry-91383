@@ -13,6 +13,7 @@ export interface Profile {
   total_ratings: number | null;
   created_at: string;
   updated_at: string;
+  unique_code: string;
 }
 
 export const useProfile = (userId: string | undefined) => {

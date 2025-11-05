@@ -36,7 +36,7 @@ export const useFavorites = (userId?: string) => {
             created_at,
             category_id,
             seller_id,
-            profiles:seller_id (
+            profiles!products_seller_id_fkey (
               id,
               full_name,
               avatar_url,

@@ -1,9 +1,29 @@
-import { ArrowLeft, User, HelpCircle, Mail } from "lucide-react";
+import { ArrowLeft, User, HelpCircle, Mail, Copy, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
+import { useCurrentUserProfile } from "@/hooks/useProfile";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const Account = () => {
   const navigate = useNavigate();
+  const { data: profile } = useCurrentUserProfile();
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  const copyToClipboard = () => {
+    if (profile?.unique_code) {
+      navigator.clipboard.writeText(profile.unique_code);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Your unique ID has been copied to clipboard",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const menuItems = [
     {
@@ -39,6 +59,31 @@ const Account = () => {
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 py-6">
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Your Unique ID</CardTitle>
+            <CardDescription>Share this ID with sellers when making purchases</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-lg font-mono bg-muted px-4 py-3 rounded-md text-center">
+                {profile?.unique_code || "Loading..."}
+              </code>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={copyToClipboard}
+              >
+                {copied ? (
+                  <Check className="h-5 w-5 text-green-500" />
+                ) : (
+                  <Copy className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;

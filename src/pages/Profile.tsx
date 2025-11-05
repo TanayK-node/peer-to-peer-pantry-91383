@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Share2, Star, Heart, LogOut, MoreVertical, Trash2, Edit, CheckCircle, MessageCircle } from "lucide-react";
+import { MarkAsSoldDialog } from "@/components/MarkAsSoldDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("listing");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [soldDialogOpen, setSoldDialogOpen] = useState(false);
 
   const deleteProduct = useDeleteProduct();
   const updateProduct = useUpdateProduct();
@@ -85,7 +87,8 @@ const Profile = () => {
   };
 
   const handleMarkAsSold = (productId: string) => {
-    updateProduct.mutate({ productId, status: "sold" });
+    setSelectedProductId(productId);
+    setSoldDialogOpen(true);
   };
 
   const handleEditProduct = (productId: string) => {
@@ -303,6 +306,19 @@ const Profile = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <MarkAsSoldDialog
+        isOpen={soldDialogOpen}
+        onClose={() => {
+          setSoldDialogOpen(false);
+          setSelectedProductId(null);
+        }}
+        productId={selectedProductId || ""}
+        onSuccess={() => {
+          // Refetch products data
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };
