@@ -94,8 +94,8 @@ const Auth = () => {
           if (error) throw error;
 
           toast({
-            title: "Account created!",
-            description: "Please check your email to verify your account.",
+            title: "Welcome to the app!",
+            description: "Your account has been created successfully.",
           });
         }
       }
