@@ -71,14 +71,18 @@ const Auth = () => {
 
         if (error) throw error;
 
+        // Sign out the user after password reset
+        await supabase.auth.signOut();
+
         toast({
           title: "Password updated!",
-          description: "Your password has been successfully reset.",
+          description: "Please login with your new password.",
         });
         
+        // Reset form and switch to login mode
+        setFormData({ email: "", password: "", fullName: "" });
         setIsResettingPassword(false);
         setIsLogin(true);
-        navigate("/");
       } else if (isForgotPassword) {
         const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
           redirectTo: `${window.location.origin}/auth`,
