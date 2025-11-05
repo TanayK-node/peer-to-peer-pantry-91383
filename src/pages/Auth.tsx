@@ -26,6 +26,7 @@ const Auth = () => {
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -42,13 +43,43 @@ const Auth = () => {
     }
   }, [user, navigate, redirectTo]);
 
+  // Check if we're in password reset mode
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    
+    if (type === 'recovery') {
+      setIsResettingPassword(true);
+      setIsForgotPassword(false);
+      setIsLogin(false);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
 
     try {
-      if (isForgotPassword) {
+      if (isResettingPassword) {
+        // Handle password reset
+        const validated = z.string().min(6, "Password must be at least 6 characters").parse(formData.password);
+
+        const { error } = await supabase.auth.updateUser({
+          password: validated,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Password updated!",
+          description: "Your password has been successfully reset.",
+        });
+        
+        setIsResettingPassword(false);
+        setIsLogin(true);
+        navigate("/");
+      } else if (isForgotPassword) {
         const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
           redirectTo: `${window.location.origin}/auth`,
         });
@@ -131,19 +162,21 @@ const Auth = () => {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">
-            {isForgotPassword ? "Reset Password" : isLogin ? "Login" : "Sign Up"}
+            {isResettingPassword ? "Set New Password" : isForgotPassword ? "Reset Password" : isLogin ? "Login" : "Sign Up"}
           </h1>
           <p className="text-muted-foreground">
-            {isForgotPassword 
-              ? "Enter your email to receive a password reset link" 
-              : isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"
+            {isResettingPassword
+              ? "Enter your new password below"
+              : isForgotPassword 
+                ? "Enter your email to receive a password reset link" 
+                : isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"
             }
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-          {!isLogin && !isForgotPassword && (
+          {!isLogin && !isForgotPassword && !isResettingPassword && (
             <div className="space-y-1">
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -162,22 +195,24 @@ const Auth = () => {
             </div>
           )}
 
-          <div className="space-y-1">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="email"
-                placeholder="Email"
-                className="pl-10 h-12"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
+          {!isResettingPassword && (
+            <div className="space-y-1">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  className="pl-10 h-12"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+              {errors.email && (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              )}
             </div>
-            {errors.email && (
-              <p className="text-xs text-destructive">{errors.email}</p>
-            )}
-          </div>
+          )}
 
           {!isForgotPassword && (
             <div className="space-y-1">
@@ -185,7 +220,7 @@ const Auth = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="password"
-                  placeholder="Password"
+                  placeholder={isResettingPassword ? "New Password" : "Password"}
                   className="pl-10 h-12"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -198,7 +233,7 @@ const Auth = () => {
             </div>
           )}
 
-          {isLogin && !isForgotPassword && (
+          {isLogin && !isForgotPassword && !isResettingPassword && (
             <div className="text-right">
               <button
                 type="button"
@@ -211,13 +246,14 @@ const Auth = () => {
           )}
 
           <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
-            {loading ? "Please wait..." : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
+            {loading ? "Please wait..." : isResettingPassword ? "Update Password" : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
           </Button>
         </form>
 
         {/* Toggle Login/Signup */}
-        <div className="text-center">
-          {isForgotPassword ? (
+        {!isResettingPassword && (
+          <div className="text-center">
+            {isForgotPassword ? (
             <p className="text-sm text-muted-foreground">
               Remember your password?{" "}
               <button
@@ -238,7 +274,8 @@ const Auth = () => {
               </button>
             </p>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
