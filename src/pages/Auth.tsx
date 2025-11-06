@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
+import campusBackground from "@/assets/campus-background.png";
 
 const authSchema = z.object({
   email: z.string()
@@ -156,8 +157,16 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex flex-col items-center justify-center px-4">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${campusBackground})` }}
+      >
+        <div className="absolute inset-0 bg-background/90 backdrop-blur-sm"></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img src={logo} alt="CampusTrades Logo" className="w-20 h-20 object-contain" />

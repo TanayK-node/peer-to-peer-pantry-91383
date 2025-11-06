@@ -8,13 +8,14 @@ import { useProducts } from "@/hooks/useProducts";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -55,12 +56,22 @@ const Index = () => {
       <main className="max-w-screen-xl mx-auto px-4 py-6">
         {/* Category Section */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-foreground mb-5">Categories</h2>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-bold text-foreground">Categories</h2>
+            {categories.length > 4 && (
+              <button
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                className="text-sm text-primary font-semibold hover:underline"
+              >
+                {showAllCategories ? "Show Less" : "View All"}
+              </button>
+            )}
+          </div>
           {categoriesLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
           ) : (
             <div className="grid grid-cols-4 gap-4">
-              {categories.map((category) => (
+              {(showAllCategories ? categories : categories.slice(0, 4)).map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
             </div>
