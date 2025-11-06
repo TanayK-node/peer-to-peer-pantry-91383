@@ -163,7 +163,7 @@ const Auth = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${campusBackground})` }}
       >
-        <div className="absolute inset-0 bg-background/90 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-background/50"></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
