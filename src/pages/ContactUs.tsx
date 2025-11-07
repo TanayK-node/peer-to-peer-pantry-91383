@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import BottomNav from "@/components/BottomNav";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const contactSchema = z.object({
@@ -37,8 +38,11 @@ const ContactUs = () => {
       contactSchema.parse(formData);
       setIsSubmitting(true);
 
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { error } = await supabase.functions.invoke('send-contact-email', {
+        body: formData,
+      });
+
+      if (error) throw error;
 
       toast({
         title: "Message sent!",
@@ -55,6 +59,12 @@ const ContactUs = () => {
           }
         });
         setErrors(fieldErrors);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
       }
     } finally {
       setIsSubmitting(false);
