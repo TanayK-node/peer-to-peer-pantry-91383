@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConversations } from "@/hooks/useConversations";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -183,6 +183,29 @@ const Chats = () => {
               const isUnread = isBuyer ? conversation.is_unread_buyer : conversation.is_unread_seller;
               const isImportant = isBuyer ? conversation.is_important_buyer : conversation.is_important_seller;
 
+              // Format timestamp
+              let timeDisplay = "";
+              if (conversation.last_message_at) {
+                const messageDate = new Date(conversation.last_message_at);
+                const now = new Date();
+                const diffInMinutes = Math.floor((now.getTime() - messageDate.getTime()) / 60000);
+                
+                if (diffInMinutes < 1) {
+                  timeDisplay = "now";
+                } else if (diffInMinutes < 60) {
+                  timeDisplay = `${diffInMinutes}m ago`;
+                } else if (diffInMinutes < 1440) { // less than 24 hours
+                  const hours = Math.floor(diffInMinutes / 60);
+                  timeDisplay = `${hours}h ago`;
+                } else if (isToday(messageDate)) {
+                  timeDisplay = format(messageDate, "HH:mm");
+                } else if (isYesterday(messageDate)) {
+                  timeDisplay = "Yesterday";
+                } else {
+                  timeDisplay = format(messageDate, "MMM d");
+                }
+              }
+
               return (
                 <div
                   key={conversation.id}
@@ -221,12 +244,8 @@ const Chats = () => {
                               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                             )}
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {conversation.last_message_at
-                              ? formatDistanceToNow(new Date(conversation.last_message_at), {
-                                  addSuffix: true,
-                                })
-                              : ""}
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {timeDisplay}
                           </span>
                         </div>
                         {conversation.products && (
