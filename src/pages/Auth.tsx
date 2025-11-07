@@ -172,126 +172,123 @@ const Auth = () => {
           <img src={logo} alt="CampusTrades Logo" className="w-20 h-20 object-contain" />
         </div>
 
-        {/* Form Container with background */}
-        <div className="bg-background/80 backdrop-blur-md rounded-lg p-8 shadow-xl border border-border/50">
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">
-              {isResettingPassword ? "Set New Password" : isForgotPassword ? "Reset Password" : isLogin ? "Login" : "Sign Up"}
-            </h1>
-            <p className="text-muted-foreground">
-              {isResettingPassword
-                ? "Enter your new password below"
-                : isForgotPassword 
-                  ? "Enter your email to receive a password reset link" 
-                  : isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"
-              }
-            </p>
-          </div>
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold mb-2 text-black dark:text-foreground">
+            {isResettingPassword ? "Set New Password" : isForgotPassword ? "Reset Password" : isLogin ? "Login" : "Sign Up"}
+          </h1>
+          <p className="text-black dark:text-muted-foreground">
+            {isResettingPassword
+              ? "Enter your new password below"
+              : isForgotPassword 
+                ? "Enter your email to receive a password reset link" 
+                : isLogin ? "Welcome to CampusTrades" : "Create your CampusTrades account"
+            }
+          </p>
+        </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            {!isLogin && !isForgotPassword && !isResettingPassword && (
-              <div className="space-y-1">
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Full Name"
-                    className="pl-10 h-12"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    required
-                  />
-                </div>
-                {errors.fullName && (
-                  <p className="text-xs text-destructive">{errors.fullName}</p>
-                )}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+          {!isLogin && !isForgotPassword && !isResettingPassword && (
+            <div className="space-y-1">
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  className="pl-10 h-12"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  required
+                />
               </div>
-            )}
-
-            {!isResettingPassword && (
-              <div className="space-y-1">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    className="pl-10 h-12"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email}</p>
-                )}
-              </div>
-            )}
-
-            {!isForgotPassword && (
-              <div className="space-y-1">
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    type="password"
-                    placeholder={isResettingPassword ? "New Password" : "Password"}
-                    className="pl-10 h-12"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                  />
-                </div>
-                {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password}</p>
-                )}
-              </div>
-            )}
-
-            {isLogin && !isForgotPassword && !isResettingPassword && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setIsForgotPassword(true)}
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
-              {loading ? "Please wait..." : isResettingPassword ? "Update Password" : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
-            </Button>
-          </form>
-
-          {/* Toggle Login/Signup */}
-          {!isResettingPassword && (
-            <div className="text-center">
-              {isForgotPassword ? (
-              <p className="text-sm text-muted-foreground">
-                Remember your password?{" "}
-                <button
-                  onClick={() => setIsForgotPassword(false)}
-                  className="text-primary font-medium"
-                >
-                  Back to Login
-                </button>
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary font-medium"
-                >
-                  {isLogin ? "Sign Up" : "Login"}
-                </button>
-              </p>
-            )}
+              {errors.fullName && (
+                <p className="text-xs text-destructive">{errors.fullName}</p>
+              )}
             </div>
           )}
-        </div>
+
+          {!isResettingPassword && (
+            <div className="space-y-1">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  className="pl-10 h-12"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+              {errors.email && (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              )}
+            </div>
+          )}
+
+          {!isForgotPassword && (
+            <div className="space-y-1">
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder={isResettingPassword ? "New Password" : "Password"}
+                  className="pl-10 h-12"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+              </div>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              )}
+            </div>
+          )}
+
+          {isLogin && !isForgotPassword && !isResettingPassword && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setIsForgotPassword(true)}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
+            {loading ? "Please wait..." : isResettingPassword ? "Update Password" : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
+          </Button>
+        </form>
+
+        {/* Toggle Login/Signup */}
+        {!isResettingPassword && (
+          <div className="text-center">
+            {isForgotPassword ? (
+            <p className="text-sm text-black dark:text-muted-foreground">
+              Remember your password?{" "}
+              <button
+                onClick={() => setIsForgotPassword(false)}
+                className="text-primary font-medium"
+              >
+                Back to Login
+              </button>
+            </p>
+          ) : (
+            <p className="text-sm text-black dark:text-muted-foreground">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-primary font-medium"
+              >
+                {isLogin ? "Sign Up" : "Login"}
+              </button>
+            </p>
+          )}
+          </div>
+        )}
       </div>
     </div>
   );
