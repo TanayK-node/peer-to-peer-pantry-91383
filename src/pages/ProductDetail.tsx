@@ -10,6 +10,8 @@ import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
 import { useCreateConversation } from "@/hooks/useCreateConversation";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useSellerProducts } from "@/hooks/useSellerProducts";
+import ProductCard from "@/components/ProductCard";
 import {
   Carousel,
   CarouselContent,
@@ -28,6 +30,7 @@ const ProductDetail = () => {
   const { data: isFavorite = false } = useIsFavorite(id || "", user?.id);
   const toggleFavorite = useToggleFavorite();
   const createConversation = useCreateConversation();
+  const { data: sellerProducts = [] } = useSellerProducts(product?.seller_id, id);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -266,6 +269,18 @@ const ProductDetail = () => {
           </Button>
         </div>
       </main>
+
+      {/* Other Listings by This Seller */}
+      {sellerProducts.length > 0 && (
+        <section className="max-w-screen-xl mx-auto px-4 py-8 border-t border-border">
+          <h2 className="text-xl font-bold mb-4">More from {seller?.full_name}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {sellerProducts.map((sellerProduct) => (
+              <ProductCard key={sellerProduct.id} product={sellerProduct} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <BottomNav />
     </div>
