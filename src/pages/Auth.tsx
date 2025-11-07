@@ -251,7 +251,7 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => setIsForgotPassword(true)}
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-black dark:text-primary hover:underline"
               >
                 Forgot password?
               </button>

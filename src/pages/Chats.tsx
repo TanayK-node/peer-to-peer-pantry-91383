@@ -198,35 +198,43 @@ const Chats = () => {
                         </div>
                       )}
                     </Avatar>
-                    <div 
-                      className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate(`/chat/${conversation.id}`)}
-                    >
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className={`font-semibold text-sm ${isUnread ? 'text-primary' : ''}`}>
-                            {otherUser?.full_name || "Unknown User"}
-                          </h3>
-                          {isUnread && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
-                          )}
-                          {isImportant && (
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
-                          )}
+                    <div className="flex-1 min-w-0">
+                      <div 
+                        className="cursor-pointer"
+                        onClick={() => navigate(`/chat/${conversation.id}`)}
+                      >
+                        <div className="flex items-start justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/profile/${otherUser?.id}`);
+                              }}
+                              className="font-semibold text-sm hover:underline text-left"
+                            >
+                              {otherUser?.full_name || "Unknown User"}
+                            </button>
+                            {isUnread && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
+                            )}
+                            {isImportant && (
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {conversation.last_message_at
+                              ? formatDistanceToNow(new Date(conversation.last_message_at), {
+                                  addSuffix: true,
+                                })
+                              : ""}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {conversation.last_message_at
-                            ? formatDistanceToNow(new Date(conversation.last_message_at), {
-                                addSuffix: true,
-                              })
-                            : ""}
-                        </span>
+                        {conversation.products && (
+                          <Badge variant="secondary" className="text-xs mb-1">
+                            {conversation.products.title}
+                          </Badge>
+                        )}
                       </div>
-                      {conversation.products && (
-                        <Badge variant="secondary" className="text-xs mb-1">
-                          {conversation.products.title}
-                        </Badge>
-                      )}
                     </div>
                     
                     {/* 3 Dots Menu */}
