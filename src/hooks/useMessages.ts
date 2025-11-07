@@ -92,7 +92,8 @@ export const useSendMessage = () => {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["messages", variables.conversationId] });
+      // Only invalidate conversations to update last message timestamp
+      // Don't invalidate messages as real-time subscription already adds it
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
   });

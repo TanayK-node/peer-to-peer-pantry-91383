@@ -182,14 +182,9 @@ const Profile = () => {
               {profile.bio}
             </p>
           )}
-          {isOwnProfile ? (
+          {isOwnProfile && (
             <Button className="px-8" onClick={() => navigate("/profile/edit")}>
               Edit Profile
-            </Button>
-          ) : (
-            <Button className="px-8" onClick={handleSendMessage}>
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Send Message
             </Button>
           )}
         </div>
