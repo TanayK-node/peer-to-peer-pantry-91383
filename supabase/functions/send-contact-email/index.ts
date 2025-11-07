@@ -26,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending contact email from:", email);
 
-    // Send email to CampusTrades using Resend API
+    // Send confirmation email to the user
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -34,18 +34,19 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "CampusTrades Contact <onboarding@resend.dev>",
-        to: ["contact.campustrades@gmail.com"],
-        reply_to: email,
-        subject: `Contact Form: ${subject}`,
+        from: "CampusTrades <onboarding@resend.dev>",
+        to: [email],
+        subject: "We received your message!",
         html: `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>From:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
+          <h2>Thank you for contacting CampusTrades!</h2>
+          <p>Hi ${name},</p>
+          <p>We've received your message and will get back to you soon.</p>
           <br />
-          <p><strong>Message:</strong></p>
+          <p><strong>Your message:</strong></p>
+          <p><strong>Subject:</strong> ${subject}</p>
           <p>${message.replace(/\n/g, '<br />')}</p>
+          <br />
+          <p>Best regards,<br />The CampusTrades Team</p>
         `,
       }),
     });
