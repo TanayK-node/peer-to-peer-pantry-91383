@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
 
 const ChatDetail = () => {
   const navigate = useNavigate();
@@ -142,6 +143,23 @@ const ChatDetail = () => {
         <div className="space-y-4 max-w-screen-xl mx-auto">
           {messages?.map((message) => {
             const isOwn = message.sender_id === user?.id;
+            const messageDate = new Date(message.created_at);
+            const now = new Date();
+            const diffInMinutes = Math.floor((now.getTime() - messageDate.getTime()) / 60000);
+            
+            let timeDisplay;
+            if (diffInMinutes < 1) {
+              timeDisplay = "now";
+            } else if (diffInMinutes < 60) {
+              timeDisplay = `${diffInMinutes}m`;
+            } else if (isToday(messageDate)) {
+              timeDisplay = format(messageDate, "HH:mm");
+            } else if (isYesterday(messageDate)) {
+              timeDisplay = "Yesterday";
+            } else {
+              timeDisplay = format(messageDate, "MMM d");
+            }
+            
             return (
               <div
                 key={message.id}
@@ -154,16 +172,13 @@ const ChatDetail = () => {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <p className="text-sm break-words">{message.content}</p>
                   <p
                     className={`text-xs mt-1 ${
                       isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
                     }`}
                   >
-                    {new Date(message.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {timeDisplay}
                   </p>
                 </div>
               </div>
