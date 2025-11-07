@@ -38,11 +38,20 @@ const ContactUs = () => {
       contactSchema.parse(formData);
       setIsSubmitting(true);
 
-      const { error } = await supabase.functions.invoke('send-contact-email', {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: formData,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Contact form error:', error);
+        throw new Error(error.message || 'Failed to send message');
+      }
+
+      // Check if the response contains an error
+      if (data && data.error) {
+        console.error('Contact form error:', data.error);
+        throw new Error(data.error || 'Failed to send message');
+      }
 
       toast({
         title: "Message sent!",
@@ -60,9 +69,12 @@ const ContactUs = () => {
         });
         setErrors(fieldErrors);
       } else {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : "Failed to send message. Please try again.";
         toast({
           title: "Error",
-          description: "Failed to send message. Please try again.",
+          description: errorMessage,
           variant: "destructive",
         });
       }
