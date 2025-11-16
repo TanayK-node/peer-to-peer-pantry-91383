@@ -2,9 +2,11 @@ import { Search } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import ItemRequestCard from "@/components/ItemRequestCard";
 import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/hooks/useProducts";
+import { useItemRequests } from "@/hooks/useItemRequests";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "@/assets/logo-main.png";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +17,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
+  const { data: itemRequests = [], isLoading: itemRequestsLoading } = useItemRequests(4);
   const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
@@ -76,7 +79,7 @@ const Index = () => {
         </section>
 
         {/* Newly Added Section */}
-        <section>
+        <section className="mb-10">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-foreground">Newly Added</h2>
             <Link to="/listings" className="text-sm text-primary font-semibold hover:underline">
@@ -91,6 +94,24 @@ const Index = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {newlyAdded.map((product) => (
                 <ProductCard key={product.id} product={product} showFeatured={false} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Item Requests Section */}
+        <section>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-bold text-foreground">Item Requests</h2>
+          </div>
+          {itemRequestsLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading requests...</div>
+          ) : itemRequests.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">No item requests yet</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {itemRequests.map((request) => (
+                <ItemRequestCard key={request.id} request={request} />
               ))}
             </div>
           )}

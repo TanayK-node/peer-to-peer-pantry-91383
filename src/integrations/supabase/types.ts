@@ -138,6 +138,50 @@ export type Database = {
           },
         ]
       }
+      item_requests: {
+        Row: {
+          condition: Database["public"]["Enums"]["product_condition"]
+          created_at: string
+          id: string
+          meetup_preference: string
+          price_quote: number
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          condition: Database["public"]["Enums"]["product_condition"]
+          created_at?: string
+          id?: string
+          meetup_preference: string
+          price_quote: number
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          condition?: Database["public"]["Enums"]["product_condition"]
+          created_at?: string
+          id?: string
+          meetup_preference?: string
+          price_quote?: number
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string

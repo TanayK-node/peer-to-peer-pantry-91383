@@ -10,6 +10,7 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const requestSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -43,7 +44,18 @@ const RequestItem = () => {
         meetupPreference: formData.meetupPreference,
       });
 
-      // TODO: Implement the actual request creation logic
+      const { error } = await supabase
+        .from('item_requests')
+        .insert({
+          user_id: user.id,
+          title: validated.title,
+          price_quote: validated.priceQuote,
+          condition: validated.condition,
+          meetup_preference: validated.meetupPreference,
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Request Submitted!",
         description: "Your item request has been submitted successfully.",
@@ -59,6 +71,12 @@ const RequestItem = () => {
           }
         });
         setErrors(newErrors);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to submit request. Please try again.",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -87,7 +105,7 @@ const RequestItem = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="hover:bg-muted"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -172,10 +190,16 @@ const RequestItem = () => {
                 <SelectValue placeholder="Select meetup preference" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="on_campus">On Campus</SelectItem>
-                <SelectItem value="library">Library</SelectItem>
-                <SelectItem value="student_center">Student Center</SelectItem>
-                <SelectItem value="other">Other Location</SelectItem>
+                <SelectItem value="eng">George Vari Engineering and Computing Centre (ENG)</SelectItem>
+                <SelectItem value="dcc">Daphne Cockwell Health Sciences Complex (DCC)</SelectItem>
+                <SelectItem value="kerr">Kerr Hall</SelectItem>
+                <SelectItem value="cui">Centre for Urban Innovation (CUI)</SelectItem>
+                <SelectItem value="jorgenson">Jorgenson Hall</SelectItem>
+                <SelectItem value="ilc">International Living/Learning Centre (ILC)</SelectItem>
+                <SelectItem value="trsm">Ted Rogers School Of Management</SelectItem>
+                <SelectItem value="arc">Architecture Building (ARC)</SelectItem>
+                <SelectItem value="chang">The Chang School of Continuing Education</SelectItem>
+                <SelectItem value="mac">Mattamy Athletic Centre</SelectItem>
               </SelectContent>
             </Select>
             {errors.meetupPreference && (
