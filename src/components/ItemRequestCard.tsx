@@ -11,6 +11,7 @@ interface ItemRequestCardProps {
 
 const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
   const navigate = useNavigate();
+  
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "new":
@@ -38,7 +39,7 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
   return (
     <Card 
       className="p-4 hover:shadow-md transition-shadow border border-border bg-card cursor-pointer"
-      onClick={() => navigate(`/request/${request.id}`)}
+      onClick={() => navigate(`/item-request/${request.id}`)}
     >
       <div className="flex items-start gap-3">
         <div className="bg-primary/10 p-3 rounded-lg">
