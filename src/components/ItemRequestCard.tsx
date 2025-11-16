@@ -78,12 +78,6 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
               </AvatarFallback>
             </Avatar>
             <span>{request.profiles?.full_name || "Anonymous"}</span>
-            <span>•</span>
-            <span>
-              {formatDistanceToNow(new Date(request.created_at), {
-                addSuffix: true,
-              })}
-            </span>
           </div>
         </div>
       </div>
