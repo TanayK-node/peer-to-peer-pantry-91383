@@ -33,7 +33,7 @@ const Index = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center group">
-              <img src={logo} alt="CampusTrades Logo" className="h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+              <img src={logo} alt="CampusTrades Logo" className="h-12 md:h-16 w-auto max-w-[120px] md:max-w-[165px] object-contain transition-transform group-hover:scale-105" />
             </Link>
             <ThemeToggle />
           </div>

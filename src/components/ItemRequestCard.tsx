@@ -38,14 +38,14 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
 
   return (
     <Card 
-      className="p-4 hover:shadow-md transition-shadow border border-border bg-card cursor-pointer"
+      className="p-4 transition-all duration-300 border cursor-pointer rounded-2xl bg-[#D8E1E6] border-[#BEB7AB]/20 hover:bg-[#E3EAF0] hover:shadow-md"
       onClick={() => navigate(`/item-request/${request.id}`)}
     >
       <div className="flex items-start gap-3">
-        <div className="bg-primary/10 p-3 rounded-lg">
+        <div className="bg-white/60 p-3 rounded-xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-primary"
+            className="h-8 w-8 text-[#404545]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -59,18 +59,18 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground mb-1 line-clamp-1">
+          <h3 className="font-semibold text-[#404545] mb-1 line-clamp-1">
             Looking for: {request.title}
           </h3>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg font-bold text-primary">
+            <span className="text-lg font-bold text-[#404545] bg-white/80 px-3 py-1 rounded-lg">
               ${request.price_quote}
             </span>
             <Badge className={getConditionColor(request.condition)}>
               {formatCondition(request.condition)}
             </Badge>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-[#8B877B]">
             <Avatar className="h-6 w-6">
               <AvatarImage src={request.profiles?.avatar_url || ""} />
               <AvatarFallback>
