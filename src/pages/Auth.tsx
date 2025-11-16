@@ -258,7 +258,7 @@ const Auth = () => {
             </div>
           )}
 
-          <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
+          <Button type="submit" className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
             {loading ? "Please wait..." : isResettingPassword ? "Update Password" : isForgotPassword ? "Send Reset Link" : isLogin ? "Login" : "Sign Up"}
           </Button>
         </form>
