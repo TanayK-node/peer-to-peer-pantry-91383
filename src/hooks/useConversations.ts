@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface Conversation {
   id: string;
-  product_id: string;
+  product_id: string | null;
+  item_request_id: string | null;
   buyer_id: string;
   seller_id: string;
   last_message_at: string | null;

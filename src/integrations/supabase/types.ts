@@ -50,8 +50,9 @@ export type Database = {
           is_important_seller: boolean | null
           is_unread_buyer: boolean | null
           is_unread_seller: boolean | null
+          item_request_id: string | null
           last_message_at: string | null
-          product_id: string
+          product_id: string | null
           seller_id: string
         }
         Insert: {
@@ -62,8 +63,9 @@ export type Database = {
           is_important_seller?: boolean | null
           is_unread_buyer?: boolean | null
           is_unread_seller?: boolean | null
+          item_request_id?: string | null
           last_message_at?: string | null
-          product_id: string
+          product_id?: string | null
           seller_id: string
         }
         Update: {
@@ -74,8 +76,9 @@ export type Database = {
           is_important_seller?: boolean | null
           is_unread_buyer?: boolean | null
           is_unread_seller?: boolean | null
+          item_request_id?: string | null
           last_message_at?: string | null
-          product_id?: string
+          product_id?: string | null
           seller_id?: string
         }
         Relationships: [
@@ -84,6 +87,13 @@ export type Database = {
             columns: ["buyer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_item_request_id_fkey"
+            columns: ["item_request_id"]
+            isOneToOne: false
+            referencedRelation: "item_requests"
             referencedColumns: ["id"]
           },
           {
