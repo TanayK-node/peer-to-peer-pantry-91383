@@ -17,6 +17,7 @@ import Search from "./pages/Search";
 import Auth from "./pages/Auth";
 import Sell from "./pages/Sell";
 import RequestItem from "./pages/RequestItem";
+import ItemRequestDetail from "./pages/ItemRequestDetail";
 import Account from "./pages/Account";
 import HowItWorks from "./pages/HowItWorks";
 import ContactUs from "./pages/ContactUs";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/sell" element={<Sell />} />
             <Route path="/request-item" element={<RequestItem />} />
+            <Route path="/request/:id" element={<ItemRequestDetail />} />
             <Route path="/account" element={<Account />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/contact-us" element={<ContactUs />} />
