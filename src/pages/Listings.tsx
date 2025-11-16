@@ -40,10 +40,8 @@ const Listings = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105">
-                
-              </div>
-              <h1 className="text-2xl font-bold text-primary">CampusTrades</h1>
+              
+              <h1 className="font-bold text-2xl text-left text-blue-800 mx-0 px-0">CampusTrades</h1>
             </Link>
             <ThemeToggle />
           </div>
