@@ -41,7 +41,7 @@ const Index = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center group">
-              <h1 className="text-2xl md:text-4xl font-bold text-primary transition-transform group-hover:scale-105">
+              <h1 className="text-2xl font-bold transition-transform group-hover:scale-105 md:text-2xl text-blue-800 text-left">
                 CampusTrades
               </h1>
             </Link>
