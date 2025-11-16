@@ -8,7 +8,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/hooks/useProducts";
 import { useItemRequests } from "@/hooks/useItemRequests";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import logo from "@/assets/logo-main.png";
+import logo from "@/assets/logo-campustrades.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
