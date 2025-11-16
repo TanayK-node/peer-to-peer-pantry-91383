@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "@/hooks/useCategories";
 import { useProducts } from "@/hooks/useProducts";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-main.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
@@ -29,11 +29,8 @@ const Index = () => {
       <header className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border z-40 px-4 py-4 shadow-sm">
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105">
-                <img src={logo} alt="CampusTrades Logo" className="w-10 h-10 object-contain" />
-              </div>
-              <h1 className="text-2xl font-bold text-primary">CampusTrades</h1>
+            <Link to="/" className="flex items-center group">
+              <img src={logo} alt="CampusTrades Logo" className="h-12 object-contain transition-transform group-hover:scale-105" />
             </Link>
             <ThemeToggle />
           </div>
