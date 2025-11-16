@@ -33,7 +33,7 @@ const Index = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center group">
-              <img src={logo} alt="CampusTrades Logo" className="h-12 md:h-16 w-auto max-w-[120px] md:max-w-[165px] object-contain transition-transform group-hover:scale-105" />
+              <img src={logo} alt="CampusTrades Logo" className="w-[120px] h-[36px] md:w-[160px] md:h-[48px] object-contain transition-transform group-hover:scale-105" />
             </Link>
             <ThemeToggle />
           </div>
@@ -103,6 +103,9 @@ const Index = () => {
         <section>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-foreground">Item Requests</h2>
+            <Link to="/item-requests" className="text-sm text-primary font-semibold hover:underline">
+              View All
+            </Link>
           </div>
           {itemRequestsLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading requests...</div>
