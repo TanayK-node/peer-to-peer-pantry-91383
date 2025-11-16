@@ -11,23 +11,31 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import logo from "@/assets/logo-campustrades.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-
 const Index = () => {
-  const { user, loading } = useAuth();
+  const {
+    user,
+    loading
+  } = useAuth();
   const navigate = useNavigate();
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
-  const { data: newlyAdded = [], isLoading: newlyAddedLoading } = useProducts(4);
-  const { data: itemRequests = [], isLoading: itemRequestsLoading } = useItemRequests(4);
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading
+  } = useCategories();
+  const {
+    data: newlyAdded = [],
+    isLoading: newlyAddedLoading
+  } = useProducts(4);
+  const {
+    data: itemRequests = [],
+    isLoading: itemRequestsLoading
+  } = useItemRequests(4);
   const [showAllCategories, setShowAllCategories] = useState(false);
-
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
-
-  return (
-    <div className="min-h-screen bg-background pb-20">
+  return <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border z-40 px-4 py-4 shadow-sm">
         <div className="max-w-screen-xl mx-auto">
@@ -42,12 +50,7 @@ const Index = () => {
           <Link to="/search" className="block">
             <div className="flex items-center gap-3 bg-muted hover:bg-muted/80 px-4 py-3 rounded-xl transition-colors border border-border/50">
               <Search className="h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search books, electronics, or tickets..."
-                className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
-                readOnly
-              />
+              <input type="text" placeholder="Search books, electronics, or tickets..." className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground" readOnly />
             </div>
           </Link>
         </div>
@@ -58,24 +61,13 @@ const Index = () => {
         <section className="mb-10">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-foreground">Categories</h2>
-            {categories.length > 4 && (
-              <button
-                onClick={() => setShowAllCategories(!showAllCategories)}
-                className="text-sm text-primary font-semibold hover:underline"
-              >
+            {categories.length > 4 && <button onClick={() => setShowAllCategories(!showAllCategories)} className="text-sm text-primary font-semibold hover:underline">
                 {showAllCategories ? "Show Less" : "View All"}
-              </button>
-            )}
+              </button>}
           </div>
-          {categoriesLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
-          ) : (
-            <div className="grid grid-cols-4 gap-4">
-              {(showAllCategories ? categories : categories.slice(0, 4)).map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          )}
+          {categoriesLoading ? <div className="text-center py-8 text-muted-foreground">Loading categories...</div> : <div className="grid grid-cols-4 gap-4">
+              {(showAllCategories ? categories : categories.slice(0, 4)).map(category => <CategoryCard key={category.id} category={category} />)}
+            </div>}
         </section>
 
         {/* Newly Added Section */}
@@ -86,17 +78,9 @@ const Index = () => {
               View All
             </Link>
           </div>
-          {newlyAddedLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading products...</div>
-          ) : newlyAdded.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No products yet</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {newlyAdded.map((product) => (
-                <ProductCard key={product.id} product={product} showFeatured={false} />
-              ))}
-            </div>
-          )}
+          {newlyAddedLoading ? <div className="text-center py-8 text-muted-foreground">Loading products...</div> : newlyAdded.length === 0 ? <div className="text-center py-8 text-muted-foreground">No products yet</div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {newlyAdded.map(product => <ProductCard key={product.id} product={product} showFeatured={false} />)}
+            </div>}
         </section>
 
         {/* Item Requests Section */}
@@ -107,23 +91,13 @@ const Index = () => {
               View All
             </Link>
           </div>
-          {itemRequestsLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading requests...</div>
-          ) : itemRequests.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No item requests yet</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {itemRequests.map((request) => (
-                <ItemRequestCard key={request.id} request={request} />
-              ))}
-            </div>
-          )}
+          {itemRequestsLoading ? <div className="text-center py-8 text-muted-foreground">Loading requests...</div> : itemRequests.length === 0 ? <div className="text-center py-8 text-muted-foreground">No item requests yet</div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {itemRequests.map(request => <ItemRequestCard key={request.id} request={request} />)}
+            </div>}
         </section>
       </main>
 
       <BottomNav />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
