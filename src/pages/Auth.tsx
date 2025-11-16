@@ -281,7 +281,7 @@ const Auth = () => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-primary font-medium"
+                className="text-foreground font-medium"
               >
                 {isLogin ? "Sign Up" : "Login"}
               </button>
