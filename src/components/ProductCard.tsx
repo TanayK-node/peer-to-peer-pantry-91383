@@ -5,6 +5,8 @@ import { Product } from "@/hooks/useProducts";
 import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsFavorite, useToggleFavorite } from "@/hooks/useFavorites";
+import { useState } from "react";
+import LoginPromptDialog from "./LoginPromptDialog";
 
 interface ProductCardProps {
   product: Product;
@@ -16,15 +18,23 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
   const { user } = useAuth();
   const { data: isFavorite = false } = useIsFavorite(product.id, user?.id);
   const toggleFavorite = useToggleFavorite();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   
   const imageUrl = product.image_urls?.[0] || "/placeholder.svg";
   const formattedDate = format(new Date(product.created_at), "MMM dd");
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault();
+      setShowLoginPrompt(true);
+    }
+  };
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     
     if (!user) {
-      navigate("/auth?redirect=" + window.location.pathname);
+      setShowLoginPrompt(true);
       return;
     }
 
@@ -34,8 +44,11 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
       isFavorite,
     });
   };
+
   return (
-    <Link to={`/product/${product.id}`} className="block group">
+    <>
+      <LoginPromptDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt} />
+      <Link to={`/product/${product.id}`} onClick={handleCardClick} className="block group">
       <div className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-glow hover:-translate-y-1">
         <div className="relative aspect-video bg-gradient-subtle overflow-hidden">
           <img
@@ -70,6 +83,7 @@ const ProductCard = ({ product, showFeatured = true }: ProductCardProps) => {
         </div>
       </div>
     </Link>
+    </>
   );
 };
 

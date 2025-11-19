@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUnreadConversations } from "@/hooks/useUnreadConversations";
 import { useState } from "react";
 import SellOptionsDialog from "./SellOptionsDialog";
+import LoginPromptDialog from "./LoginPromptDialog";
 
 const BottomNav = () => {
   const location = useLocation();
@@ -11,6 +12,7 @@ const BottomNav = () => {
   const { user } = useAuth();
   const { data: unreadCount = 0 } = useUnreadConversations();
   const [showSellOptions, setShowSellOptions] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
@@ -20,12 +22,12 @@ const BottomNav = () => {
   ];
 
   const handleNavigation = (path: string) => {
-    if (path === "/sell") {
-      setShowSellOptions(true);
+    if ((path === "/sell" || path === "/account") && !user) {
+      setShowLoginPrompt(true);
       return;
     }
-    if (path === "/account" && !user) {
-      navigate("/auth");
+    if (path === "/sell") {
+      setShowSellOptions(true);
       return;
     }
     navigate(path);
@@ -34,6 +36,7 @@ const BottomNav = () => {
   return (
     <>
       <SellOptionsDialog open={showSellOptions} onOpenChange={setShowSellOptions} />
+      <LoginPromptDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt} />
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border z-50 shadow-lg">
         <div className="flex justify-around items-center h-16 max-w-screen-xl mx-auto px-4">
           {navItems.map((item) => {

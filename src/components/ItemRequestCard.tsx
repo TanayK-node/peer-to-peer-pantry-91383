@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { ItemRequest } from "@/hooks/useItemRequests";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import LoginPromptDialog from "./LoginPromptDialog";
 
 interface ItemRequestCardProps {
   request: ItemRequest;
@@ -11,7 +14,17 @@ interface ItemRequestCardProps {
 
 const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   
+  const handleCardClick = () => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    navigate(`/item-request/${request.id}`);
+  };
+
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "new":
@@ -37,10 +50,12 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
   };
 
   return (
-    <Card 
-      className="p-4 transition-all duration-300 border cursor-pointer rounded-2xl bg-[#D8E1E6] border-[#BEB7AB]/20 hover:bg-[#E3EAF0] hover:shadow-md"
-      onClick={() => navigate(`/item-request/${request.id}`)}
-    >
+    <>
+      <LoginPromptDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt} />
+      <Card 
+        className="p-4 transition-all duration-300 border cursor-pointer rounded-2xl bg-[#D8E1E6] border-[#BEB7AB]/20 hover:bg-[#E3EAF0] hover:shadow-md"
+        onClick={handleCardClick}
+      >
       <div className="flex items-start gap-3">
         <div className="bg-white/60 p-3 rounded-xl">
           <svg
@@ -82,6 +97,7 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
         </div>
       </div>
     </Card>
+    </>
   );
 };
 
