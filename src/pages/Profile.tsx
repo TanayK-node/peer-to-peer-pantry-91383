@@ -69,7 +69,7 @@ const Profile = () => {
         variant: "destructive",
       });
     } else {
-      navigate("/auth");
+      navigate("/");
     }
   };
 
