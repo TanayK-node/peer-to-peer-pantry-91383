@@ -1,6 +1,7 @@
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -32,6 +33,7 @@ const LoginPromptDialog = ({ open, onOpenChange }: LoginPromptDialogProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleLogin}>
             Login with TMU Email
           </AlertDialogAction>
