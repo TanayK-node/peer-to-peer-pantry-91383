@@ -30,11 +30,7 @@ const Index = () => {
     isLoading: itemRequestsLoading
   } = useItemRequests(4);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/auth");
-    }
-  }, [user, loading, navigate]);
+  // No redirect - allow unauthenticated users to view home page
   return <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border z-40 px-4 py-4 shadow-sm">
