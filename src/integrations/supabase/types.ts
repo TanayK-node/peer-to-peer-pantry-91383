@@ -152,6 +152,7 @@ export type Database = {
         Row: {
           condition: Database["public"]["Enums"]["product_condition"]
           created_at: string
+          fulfiller_id: string | null
           id: string
           meetup_preference: string
           price_quote: number
@@ -163,6 +164,7 @@ export type Database = {
         Insert: {
           condition: Database["public"]["Enums"]["product_condition"]
           created_at?: string
+          fulfiller_id?: string | null
           id?: string
           meetup_preference: string
           price_quote: number
@@ -174,6 +176,7 @@ export type Database = {
         Update: {
           condition?: Database["public"]["Enums"]["product_condition"]
           created_at?: string
+          fulfiller_id?: string | null
           id?: string
           meetup_preference?: string
           price_quote?: number
@@ -183,6 +186,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "item_requests_fulfiller_id_fkey"
+            columns: ["fulfiller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "item_requests_user_id_fkey"
             columns: ["user_id"]
