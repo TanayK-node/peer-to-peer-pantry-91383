@@ -87,12 +87,12 @@ const ItemRequestCard = ({ request }: ItemRequestCardProps) => {
           </div>
           <div className="flex items-center gap-2 text-sm text-[#8B877B]">
             <Avatar className="h-6 w-6">
-              <AvatarImage src={request.profiles?.avatar_url || ""} />
+              <AvatarImage src={request.requester_profile?.avatar_url || ""} />
               <AvatarFallback>
-                {request.profiles?.full_name?.charAt(0) || "U"}
+                {request.requester_profile?.full_name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <span>{request.profiles?.full_name || "Anonymous"}</span>
+            <span>{request.requester_profile?.full_name || "Anonymous"}</span>
           </div>
         </div>
       </div>

@@ -10,7 +10,7 @@ export interface ItemRequest {
   meetup_preference: string;
   status: string;
   created_at: string;
-  profiles: {
+  requester_profile: {
     full_name: string;
     avatar_url: string | null;
   };
@@ -24,7 +24,7 @@ export const useItemRequests = (limit?: number) => {
         .from("item_requests")
         .select(`
           *,
-          profiles:user_id (
+          requester_profile:profiles!user_id (
             full_name,
             avatar_url
           )

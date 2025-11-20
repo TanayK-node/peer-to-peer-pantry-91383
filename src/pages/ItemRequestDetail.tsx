@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,6 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ItemRequest } from "@/hooks/useItemRequests";
 import { useCreateItemRequestConversation } from "@/hooks/useCreateItemRequestConversation";
+import { MarkItemRequestFulfilledDialog } from "@/components/MarkItemRequestFulfilledDialog";
+import { useState } from "react";
 
 const ItemRequestDetail = () => {
   const { id } = useParams();
@@ -18,6 +20,7 @@ const ItemRequestDetail = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const createConversation = useCreateItemRequestConversation();
+  const [showFulfilledDialog, setShowFulfilledDialog] = useState(false);
 
   const { data: request, isLoading } = useQuery({
     queryKey: ["item-request", id],
@@ -26,7 +29,7 @@ const ItemRequestDetail = () => {
         .from("item_requests")
         .select(`
           *,
-          profiles:user_id (
+          requester_profile:profiles!user_id (
             full_name,
             avatar_url,
             rating,
@@ -38,7 +41,7 @@ const ItemRequestDetail = () => {
 
       if (error) throw error;
       return data as ItemRequest & {
-        profiles: {
+        requester_profile: {
           full_name: string;
           avatar_url: string | null;
           rating: number | null;
@@ -73,7 +76,7 @@ const ItemRequestDetail = () => {
       .join(" ");
   };
 
-  const handleFulfillRequest = async () => {
+  const handleFulfillRequest = () => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -91,6 +94,27 @@ const ItemRequestDetail = () => {
       return;
     }
 
+    setShowFulfilledDialog(true);
+  };
+
+  const handleSendMessage = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to send a message",
+      });
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+
+    if (user.id === request?.user_id) {
+      toast({
+        title: "Cannot message yourself",
+        description: "You cannot send a message to yourself",
+      });
+      return;
+    }
+
     try {
       const conversationId = await createConversation.mutateAsync({
         itemRequestId: id || "",
@@ -104,6 +128,23 @@ const ItemRequestDetail = () => {
         description: "Failed to start conversation",
       });
     }
+  };
+
+  const formatMeetupPreference = (preference: string) => {
+    const locations: Record<string, string> = {
+      "SLC": "Student Learning Centre",
+      "KHE": "Kerr Hall East",
+      "KHW": "Kerr Hall West",
+      "KHS": "Kerr Hall South",
+      "KHN": "Kerr Hall North",
+      "ENG": "Engineering Building",
+      "VIC": "Victoria Building",
+      "POD": "Podium",
+      "LIB": "Library Building",
+      "ILC": "International Living/Learning Centre",
+      "TRSM": "Ted Rogers School of Management",
+    };
+    return locations[preference] || preference;
   };
 
   if (isLoading) {
@@ -126,7 +167,7 @@ const ItemRequestDetail = () => {
   }
 
   const formattedDate = format(new Date(request.created_at), "MMM dd, yyyy");
-  const requester = request.profiles;
+  const requester = request.requester_profile;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -146,65 +187,52 @@ const ItemRequestDetail = () => {
       </div>
 
       <div className="container max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* Request Icon */}
-        <div className="flex justify-center">
-          <div className="bg-primary/10 p-8 rounded-2xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+        {/* Item Details Card */}
+        <div className="bg-card rounded-xl p-6 border border-border space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Item</p>
+            <h2 className="text-2xl font-bold text-foreground">{request.title}</h2>
           </div>
-        </div>
 
-        {/* Title and Price */}
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-foreground">{request.title}</h2>
-          <div className="flex items-center gap-3">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Price Quote</p>
             <span className="text-3xl font-bold text-primary">
               ${request.price_quote}
             </span>
+          </div>
+
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Condition</p>
             <Badge className={getConditionColor(request.condition)}>
               {formatCondition(request.condition)}
             </Badge>
           </div>
-        </div>
 
-        {/* Meetup Preference */}
-        <div className="bg-muted/50 rounded-xl p-4">
-          <p className="text-sm text-muted-foreground mb-1">Meetup Preference</p>
-          <p className="font-medium text-foreground">{request.meetup_preference}</p>
-        </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Meetup Preference</p>
+            <p className="font-medium text-foreground">{formatMeetupPreference(request.meetup_preference)}</p>
+          </div>
 
-        {/* Requester Info */}
-        <div className="bg-card rounded-xl p-4 border border-border">
-          <p className="text-sm text-muted-foreground mb-3">Requested by</p>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={requester?.avatar_url || ""} />
-              <AvatarFallback>
-                {requester?.full_name?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground">
-                {requester?.full_name || "Anonymous"}
-              </p>
-              {requester?.rating !== null && requester?.rating !== undefined && (
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <span>⭐ {requester.rating.toFixed(1)}</span>
-                  <span>({requester.total_ratings || 0} ratings)</span>
-                </div>
-              )}
+          <div className="pt-2 border-t border-border">
+            <p className="text-sm text-muted-foreground mb-3">Requested by</p>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={requester?.avatar_url || ""} />
+                <AvatarFallback>
+                  {requester?.full_name?.charAt(0) || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground">
+                  {requester?.full_name || "Anonymous"}
+                </p>
+                {requester?.rating !== null && requester?.rating !== undefined && (
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <span>⭐ {requester.rating.toFixed(1)}</span>
+                    <span>({requester.total_ratings || 0} ratings)</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -214,15 +242,40 @@ const ItemRequestDetail = () => {
           Posted on {formattedDate}
         </div>
 
-        {/* Fulfill Button */}
-        <Button
-          onClick={handleFulfillRequest}
-          className="w-full h-12 text-base font-semibold"
-          size="lg"
-        >
-          Fulfill Item Request
-        </Button>
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={handleSendMessage}
+            variant="outline"
+            className="w-full h-12 text-base font-semibold"
+            size="lg"
+          >
+            <MessageCircle className="h-5 w-5 mr-2" />
+            Send Message
+          </Button>
+          
+          <Button
+            onClick={handleFulfillRequest}
+            className="w-full h-12 text-base font-semibold"
+            size="lg"
+          >
+            Fulfill Item Request
+          </Button>
+        </div>
       </div>
+
+      <MarkItemRequestFulfilledDialog
+        isOpen={showFulfilledDialog}
+        onClose={() => setShowFulfilledDialog(false)}
+        itemRequestId={id || ""}
+        onSuccess={() => {
+          toast({
+            title: "Success",
+            description: "The requester will be able to rate you once they log in.",
+          });
+          navigate("/");
+        }}
+      />
 
       <BottomNav />
     </div>

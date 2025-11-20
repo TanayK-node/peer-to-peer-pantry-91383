@@ -38,7 +38,7 @@ const Index = () => {
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center group">
               <h1 className="text-2xl font-bold transition-transform group-hover:scale-105 md:text-2xl text-blue-800 text-left">
-                CampusTrades
+                TMU's CampusTrades
               </h1>
             </Link>
             <ThemeToggle />
