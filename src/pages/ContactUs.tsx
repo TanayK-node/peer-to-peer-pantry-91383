@@ -93,13 +93,13 @@ const ContactUs = () => {
     {
       icon: Instagram,
       title: "Instagram",
-      value: "@campustrades.ca",
+      value: "@tmu.campustrades",
       description: "Follow us for updates",
     },
     {
       icon: SiTiktok,
       title: "TikTok",
-      value: "@campustrades.ca",
+      value: "@tmu.campustrades",
       description: "Check out our content",
     },
   ];
