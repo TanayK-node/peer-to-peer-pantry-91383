@@ -41,7 +41,7 @@ const Listings = () => {
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="flex items-center gap-2 group">
               
-              <h1 className="font-bold text-2xl text-left text-blue-800 mx-0 px-0">CampusTrades</h1>
+              <h1 className="font-bold text-2xl text-left text-blue-800 mx-0 px-0">TMU's CampusTrades</h1>
             </Link>
             <ThemeToggle />
           </div>
