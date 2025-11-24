@@ -62,7 +62,7 @@ const Account = () => {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Your Unique ID</CardTitle>
-            <CardDescription>Share your unique ID to the purchaser after completing your transaction</CardDescription>
+            <CardDescription>Share your unique ID to the seller after completing your transaction for review</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
