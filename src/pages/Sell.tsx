@@ -41,6 +41,7 @@ const Sell = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +71,39 @@ const Sell = () => {
   const removeImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
     setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const newImages = [...images];
+    const newPreviews = [...imagePreviews];
+    
+    const draggedImage = newImages[draggedIndex];
+    const draggedPreview = newPreviews[draggedIndex];
+    
+    newImages.splice(draggedIndex, 1);
+    newPreviews.splice(draggedIndex, 1);
+    
+    newImages.splice(dropIndex, 0, draggedImage);
+    newPreviews.splice(dropIndex, 0, draggedPreview);
+    
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+    setDraggedIndex(null);
   };
 
   const uploadImages = async (): Promise<string[]> => {
@@ -200,7 +234,14 @@ const Sell = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative aspect-square">
+                    <div 
+                      key={index} 
+                      className="relative aspect-square cursor-move"
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                    >
                       <img
                         src={preview}
                         alt={`Preview ${index + 1}`}
@@ -231,7 +272,7 @@ const Sell = () => {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  {imagePreviews.length}/5 images • First image will be the main photo
+                  {imagePreviews.length}/5 images • First image will be the main photo • Drag to reorder
                 </p>
               </div>
             )}

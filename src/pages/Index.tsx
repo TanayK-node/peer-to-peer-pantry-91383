@@ -24,7 +24,7 @@ const Index = () => {
   const {
     data: newlyAdded = [],
     isLoading: newlyAddedLoading
-  } = useProducts(4);
+  } = useProducts(6);
   const {
     data: itemRequests = [],
     isLoading: itemRequestsLoading
