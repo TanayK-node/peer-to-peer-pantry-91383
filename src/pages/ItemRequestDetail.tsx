@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,20 +7,32 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ItemRequest } from "@/hooks/useItemRequests";
 import { useCreateItemRequestConversation } from "@/hooks/useCreateItemRequestConversation";
 import { MarkItemRequestFulfilledDialog } from "@/components/MarkItemRequestFulfilledDialog";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ItemRequestDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const createConversation = useCreateItemRequestConversation();
   const [showFulfilledDialog, setShowFulfilledDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: request, isLoading } = useQuery({
     queryKey: ["item-request", id],
@@ -114,20 +126,35 @@ const ItemRequestDetail = () => {
       });
       return;
     }
+  };
 
-    try {
-      const conversationId = await createConversation.mutateAsync({
-        itemRequestId: id || "",
-        requesterId: request?.user_id || "",
+  const deleteRequestMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("item_requests")
+        .delete()
+        .eq("id", id || "");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["item-requests"] });
+      toast({
+        title: "Request deleted",
+        description: "Your item request has been deleted",
       });
-      navigate(`/chat/${conversationId}`);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
+      navigate("/");
+    },
+    onError: () => {
       toast({
         title: "Error",
-        description: "Failed to start conversation",
+        description: "Failed to delete the request",
+        variant: "destructive",
       });
-    }
+    },
+  });
+
+  const handleDeleteRequest = () => {
+    setShowDeleteDialog(true);
   };
 
   const formatMeetupPreference = (preference: string) => {
@@ -244,23 +271,39 @@ const ItemRequestDetail = () => {
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Button
-            onClick={handleSendMessage}
-            variant="outline"
-            className="w-full h-12 text-base font-semibold"
-            size="lg"
-          >
-            <MessageCircle className="h-5 w-5 mr-2" />
-            Send Message
-          </Button>
+          {user?.id !== request.user_id && (
+            <>
+              <Button
+                onClick={handleSendMessage}
+                variant="outline"
+                className="w-full h-12 text-base font-semibold"
+                size="lg"
+              >
+                <MessageCircle className="h-5 w-5 mr-2" />
+                Send Message
+              </Button>
+              
+              <Button
+                onClick={handleFulfillRequest}
+                className="w-full h-12 text-base font-semibold"
+                size="lg"
+              >
+                Fulfill Item Request
+              </Button>
+            </>
+          )}
           
-          <Button
-            onClick={handleFulfillRequest}
-            className="w-full h-12 text-base font-semibold"
-            size="lg"
-          >
-            Fulfill Item Request
-          </Button>
+          {user?.id === request.user_id && (
+            <Button
+              onClick={handleDeleteRequest}
+              variant="destructive"
+              className="w-full h-12 text-base font-semibold"
+              size="lg"
+            >
+              <Trash2 className="h-5 w-5 mr-2" />
+              Delete Request
+            </Button>
+          )}
         </div>
       </div>
 
@@ -276,6 +319,26 @@ const ItemRequestDetail = () => {
           navigate("/");
         }}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Item Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this item request? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteRequestMutation.mutate()}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <BottomNav />
     </div>
