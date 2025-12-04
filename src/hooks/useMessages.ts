@@ -69,9 +69,11 @@ export const useSendMessage = () => {
     mutationFn: async ({
       conversationId,
       content,
+      recipientId,
     }: {
       conversationId: string;
       content: string;
+      recipientId: string;
     }) => {
       const {
         data: { user },
@@ -89,6 +91,18 @@ export const useSendMessage = () => {
         .single();
 
       if (error) throw error;
+
+      // Send email notification to recipient (fire and forget)
+      supabase.functions.invoke("send-message-notification", {
+        body: {
+          conversationId,
+          senderId: user.id,
+          recipientId,
+        },
+      }).catch((err) => {
+        console.error("Failed to send message notification:", err);
+      });
+
       return data;
     },
     onSuccess: (_, variables) => {

@@ -56,11 +56,12 @@ const ChatDetail = () => {
       : conversation?.buyer_profile;
 
   const handleSend = async () => {
-    if (!messageText.trim() || !conversationId) return;
+    if (!messageText.trim() || !conversationId || !otherUser?.id) return;
 
     await sendMessage.mutateAsync({
       conversationId,
       content: messageText,
+      recipientId: otherUser.id,
     });
 
     setMessageText("");
