@@ -3,7 +3,7 @@ import { X, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { usePendingRatings } from "@/hooks/usePendingRatings";
+import { usePendingRatings, PendingRating } from "@/hooks/usePendingRatings";
 import { useSubmitRating } from "@/hooks/useSubmitRating";
 
 export const RatingPrompt = () => {
@@ -16,19 +16,30 @@ export const RatingPrompt = () => {
 
   if (isLoading || pendingRatings.length === 0 || dismissed) return null;
 
-  const currentProduct = pendingRatings[currentIndex];
-  const seller = currentProduct?.profiles;
+  const currentItem = pendingRatings[currentIndex] as PendingRating;
+  const seller = currentItem?.profiles;
+  const isItemRequest = currentItem?.type === "item_request";
 
   const handleSubmit = () => {
     if (selectedRating === 0) return;
 
-    submitRating({
-      productId: currentProduct.id,
-      sellerId: currentProduct.seller_id,
-      rating: selectedRating,
-    });
+    if (currentItem.type === "product") {
+      submitRating({
+        type: "product",
+        productId: currentItem.id,
+        sellerId: currentItem.seller_id,
+        rating: selectedRating,
+      });
+    } else {
+      submitRating({
+        type: "item_request",
+        itemRequestId: currentItem.id,
+        fulfillerId: currentItem.fulfiller_id,
+        rating: selectedRating,
+      });
+    }
 
-    // Move to next product or dismiss if done
+    // Move to next item or dismiss if done
     if (currentIndex < pendingRatings.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setSelectedRating(0);
@@ -58,7 +69,9 @@ export const RatingPrompt = () => {
           >
             <X className="h-4 w-4" />
           </Button>
-          <CardTitle className="text-center">Rate Your Purchase</CardTitle>
+          <CardTitle className="text-center">
+            {isItemRequest ? "Rate the Fulfiller" : "Rate Your Purchase"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col items-center space-y-4">
@@ -68,7 +81,9 @@ export const RatingPrompt = () => {
             </Avatar>
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                You recently bought from
+                {isItemRequest
+                  ? "Your item request was fulfilled by"
+                  : "You recently bought from"}
               </p>
               <p className="font-semibold text-lg">{seller?.full_name}</p>
             </div>
@@ -76,7 +91,7 @@ export const RatingPrompt = () => {
 
           <div className="space-y-2">
             <p className="text-sm text-center text-muted-foreground">
-              Product: {currentProduct.title}
+              {isItemRequest ? "Item Request" : "Product"}: {currentItem.title}
             </p>
             <p className="text-sm text-center font-medium">
               Rate your experience (1-5 stars)
