@@ -126,6 +126,20 @@ const ItemRequestDetail = () => {
       });
       return;
     }
+
+    try {
+      const conversationId = await createConversation.mutateAsync({
+        itemRequestId: id || "",
+        requesterId: request.user_id,
+      });
+      navigate(`/chat/${conversationId}`);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create conversation",
+        variant: "destructive",
+      });
+    }
   };
 
   const deleteRequestMutation = useMutation({

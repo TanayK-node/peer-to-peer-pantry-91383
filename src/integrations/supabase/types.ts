@@ -370,7 +370,8 @@ export type Database = {
           buyer_id: string
           created_at: string
           id: string
-          product_id: string
+          item_request_id: string | null
+          product_id: string | null
           rating: number
           seller_id: string
         }
@@ -378,7 +379,8 @@ export type Database = {
           buyer_id: string
           created_at?: string
           id?: string
-          product_id: string
+          item_request_id?: string | null
+          product_id?: string | null
           rating: number
           seller_id: string
         }
@@ -386,7 +388,8 @@ export type Database = {
           buyer_id?: string
           created_at?: string
           id?: string
-          product_id?: string
+          item_request_id?: string | null
+          product_id?: string | null
           rating?: number
           seller_id?: string
         }
@@ -396,6 +399,13 @@ export type Database = {
             columns: ["buyer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_item_request_id_fkey"
+            columns: ["item_request_id"]
+            isOneToOne: false
+            referencedRelation: "item_requests"
             referencedColumns: ["id"]
           },
           {
